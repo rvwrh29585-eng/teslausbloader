@@ -96,7 +96,7 @@ export function SoundCard({
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleShareClick}
-            className="p-1.5 rounded-full text-neutral-600 hover:text-blue-400 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
+            className="p-1.5 rounded-full text-neutral-400 hover:text-blue-400 transition-all duration-200 hover:scale-110 active:scale-95"
             title="Share this sound"
           >
             <ShareIcon className="w-4 h-4" />
@@ -108,7 +108,7 @@ export function SoundCard({
               p-1.5 rounded-full transition-all duration-200
               ${isFavorite
                 ? 'text-pink-500 hover:text-pink-400'
-                : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
+                : 'text-neutral-400 hover:text-pink-500'
               }
               ${heartAnimating ? 'animate-heart-pop' : ''}
               hover:scale-110 active:scale-95
@@ -164,7 +164,7 @@ export function SoundCard({
         <div className="flex items-center gap-0.5">
           <button
             onClick={handleShareClick}
-            className="p-1 rounded-full text-neutral-600 hover:text-blue-400 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95"
+            className="p-1 rounded-full text-neutral-400 hover:text-blue-400 transition-all duration-200 hover:scale-110 active:scale-95"
             title="Share"
           >
             <ShareIcon className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ export function SoundCard({
               p-1 rounded-full transition-all duration-200
               ${isFavorite
                 ? 'text-pink-500 hover:text-pink-400'
-                : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
+                : 'text-neutral-400 hover:text-pink-500'
               }
               ${heartAnimating ? 'animate-heart-pop' : ''}
               hover:scale-110 active:scale-95
