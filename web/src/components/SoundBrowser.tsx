@@ -23,6 +23,7 @@ interface SoundBrowserProps {
   onPlaySound: (sound: ProcessedSound) => void;
   onSelectSound: (sound: ProcessedSound) => void;
   onToggleFavorite: (soundId: string) => void;
+  onShareSound: (sound: ProcessedSound) => void;
 }
 
 type FilterMode = 'all' | 'favorites' | 'recent';
@@ -41,6 +42,7 @@ export function SoundBrowser({
   onPlaySound,
   onSelectSound,
   onToggleFavorite,
+  onShareSound,
 }: SoundBrowserProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -248,6 +250,7 @@ export function SoundBrowser({
               onPlay={() => onPlaySound(sound)}
               onSelect={() => onSelectSound(sound)}
               onToggleFavorite={() => onToggleFavorite(sound.id)}
+              onShare={() => onShareSound(sound)}
             />
           ))}
         </div>
@@ -265,6 +268,7 @@ export function SoundBrowser({
               onPlay={() => onPlaySound(sound)}
               onSelect={() => onSelectSound(sound)}
               onToggleFavorite={() => onToggleFavorite(sound.id)}
+              onShare={() => onShareSound(sound)}
             />
           ))}
         </div>

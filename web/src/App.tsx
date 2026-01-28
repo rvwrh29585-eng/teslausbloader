@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSounds } from './hooks/useSounds';
 import type { ProcessedSound } from './hooks/useSounds';
 import { useAudio } from './hooks/useAudio';
 import { useFavorites } from './hooks/useFavorites';
 import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
 import { useStats } from './hooks/useStats';
+import { useToast } from './components/Toast';
 import { Hero } from './components/Hero';
 import { StatsToggle } from './components/StatsToggle';
 import { QuickPicks } from './components/QuickPicks';
@@ -22,8 +23,27 @@ function App() {
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
   const { recordPlay, recordDownload, recordFavorite, getPlayCount, getTopSounds, getTopFavorited, globalStats, mode, setMode } = useStats();
+  const { showToast } = useToast();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
+
+  // Handle shared sound URL parameter
+  useEffect(() => {
+    if (sounds.length === 0) return;
+    
+    const params = new URLSearchParams(window.location.search);
+    const sharedSoundId = params.get('sound');
+    
+    if (sharedSoundId) {
+      const sound = sounds.find(s => s.id === sharedSoundId);
+      if (sound) {
+        setSelectedSound(sound);
+        showToast(`Loaded shared sound: ${sound.displayName}`);
+        // Clear the URL parameter without refresh
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, [sounds, showToast]);
 
   const handlePlaySound = useCallback((sound: ProcessedSound) => {
     play(sound.url, sound.id);
@@ -46,6 +66,32 @@ function App() {
     toggleFavorite(soundId);
     recordFavorite(soundId, !wasAlreadyFavorite);
   }, [favorites, toggleFavorite, recordFavorite]);
+
+  const handleShareSound = useCallback(async (sound: ProcessedSound) => {
+    const shareUrl = `${window.location.origin}?sound=${encodeURIComponent(sound.id)}`;
+    const shareData = {
+      title: `${sound.displayName} - Tesla Lock Sound`,
+      text: `Check out this Tesla lock sound: ${sound.displayName}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Link copied to clipboard!');
+      }
+    } catch (err) {
+      // User cancelled or error - try clipboard fallback
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Link copied to clipboard!');
+      } catch {
+        console.error('Failed to share or copy:', err);
+      }
+    }
+  }, [showToast]);
 
   if (loading) {
     return (
@@ -170,6 +216,7 @@ function App() {
           onPlaySound={handlePlaySound}
           onSelectSound={handleSelectSound}
           onToggleFavorite={handleToggleFavorite}
+          onShareSound={handleShareSound}
         />
       </main>
 
@@ -194,6 +241,34 @@ function App() {
 
       {/* Cache manager */}
       <CacheManager sounds={sounds} />
+
+      {/* Footer */}
+      <footer className="max-w-7xl mx-auto px-4 py-8 mt-8 border-t border-neutral-800">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
+          <div className="flex items-center gap-2">
+            <span>v1.0.0</span>
+            <span className="text-neutral-700">•</span>
+            <a 
+              href="https://www.notateslaapp.com/tesla-custom-lock-sounds/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-red-400 transition-colors"
+            >
+              Sounds by Not a Tesla App
+            </a>
+          </div>
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://github.com/rvwrh29585-eng/teslausbloader" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
