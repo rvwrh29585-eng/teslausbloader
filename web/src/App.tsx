@@ -20,7 +20,7 @@ function App() {
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
-  const { recordPlay, recordDownload, getPlayCount, getTopSounds, globalStats } = useStats();
+  const { recordPlay, recordDownload, recordFavorite, getPlayCount, getTopSounds, getTopFavorited, globalStats } = useStats();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
@@ -39,6 +39,12 @@ function App() {
     setSelectedSound(null);
     stop();
   }, [stop]);
+
+  const handleToggleFavorite = useCallback((soundId: string) => {
+    const wasAlreadyFavorite = favorites.includes(soundId);
+    toggleFavorite(soundId);
+    recordFavorite(soundId, !wasAlreadyFavorite);
+  }, [favorites, toggleFavorite, recordFavorite]);
 
   if (loading) {
     return (
@@ -139,10 +145,11 @@ function App() {
           onSelect={handleSelectSound}
         />
         
-        {/* Most Popular */}
+        {/* Most Popular / Most Favorited */}
         <MostPopular
           sounds={sounds}
-          topSounds={getTopSounds(5)}
+          topPlayed={getTopSounds(5)}
+          topFavorited={getTopFavorited(5)}
           currentlyPlaying={currentSound}
           isPlaying={isPlaying}
           onPlay={handlePlaySound}
@@ -161,7 +168,7 @@ function App() {
           getPlayCount={getPlayCount}
           onPlaySound={handlePlaySound}
           onSelectSound={handleSelectSound}
-          onToggleFavorite={toggleFavorite}
+          onToggleFavorite={handleToggleFavorite}
         />
       </main>
 

@@ -10,11 +10,13 @@ interface Env {
 interface SoundStats {
   plays: number;
   downloads: number;
+  favorites: number;
 }
 
 interface GlobalStats {
   totalPlays: number;
   totalDownloads: number;
+  totalFavorites: number;
   lastUpdated: string;
 }
 
@@ -35,7 +37,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const globalStats = await context.env.STATS.get('stats:_global', 'json') as GlobalStats | null;
     
     return Response.json({
-      global: globalStats || { totalPlays: 0, totalDownloads: 0 },
+      global: globalStats || { totalPlays: 0, totalDownloads: 0, totalFavorites: 0 },
       top: topSounds || {}
     });
   } catch (e) {
@@ -43,25 +45,29 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 };
 
-// POST /api/stats - Record a play or download event
+// POST /api/stats - Record a play, download, or favorite event
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
-    const body = await context.request.json() as { soundId: string; event: 'play' | 'download' };
+    const body = await context.request.json() as { soundId: string; event: 'play' | 'download' | 'favorite' | 'unfavorite' };
     const { soundId, event } = body;
     
-    if (!soundId || !event || !['play', 'download'].includes(event)) {
+    if (!soundId || !event || !['play', 'download', 'favorite', 'unfavorite'].includes(event)) {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
     }
     
     // Get current stats for this sound
     const currentStats = await context.env.STATS.get(`stats:${soundId}`, 'json') as SoundStats | null;
-    const stats: SoundStats = currentStats || { plays: 0, downloads: 0 };
+    const stats: SoundStats = currentStats || { plays: 0, downloads: 0, favorites: 0 };
     
-    // Increment the appropriate counter
+    // Increment/decrement the appropriate counter
     if (event === 'play') {
       stats.plays++;
-    } else {
+    } else if (event === 'download') {
       stats.downloads++;
+    } else if (event === 'favorite') {
+      stats.favorites++;
+    } else if (event === 'unfavorite') {
+      stats.favorites = Math.max(0, stats.favorites - 1);
     }
     
     // Save updated stats
@@ -69,12 +75,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     
     // Update global stats
     const globalStats = await context.env.STATS.get('stats:_global', 'json') as GlobalStats | null;
-    const global: GlobalStats = globalStats || { totalPlays: 0, totalDownloads: 0, lastUpdated: '' };
+    const global: GlobalStats = globalStats || { totalPlays: 0, totalDownloads: 0, totalFavorites: 0, lastUpdated: '' };
     
     if (event === 'play') {
       global.totalPlays++;
-    } else {
+    } else if (event === 'download') {
       global.totalDownloads++;
+    } else if (event === 'favorite') {
+      global.totalFavorites++;
+    } else if (event === 'unfavorite') {
+      global.totalFavorites = Math.max(0, global.totalFavorites - 1);
     }
     global.lastUpdated = new Date().toISOString();
     
