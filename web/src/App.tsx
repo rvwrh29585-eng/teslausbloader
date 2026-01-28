@@ -7,6 +7,7 @@ import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
 import { useStats } from './hooks/useStats';
 import { Hero } from './components/Hero';
 import { QuickPicks } from './components/QuickPicks';
+import { MostPopular } from './components/MostPopular';
 import { SoundBrowser } from './components/SoundBrowser';
 import { RandomBrowse } from './components/RandomBrowse';
 import { DownloadPanel } from './components/DownloadPanel';
@@ -19,7 +20,7 @@ function App() {
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
-  const { recordPlay, recordDownload, globalStats } = useStats();
+  const { recordPlay, recordDownload, getPlayCount, getTopSounds, globalStats } = useStats();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
@@ -138,6 +139,16 @@ function App() {
           onSelect={handleSelectSound}
         />
         
+        {/* Most Popular */}
+        <MostPopular
+          sounds={sounds}
+          topSounds={getTopSounds(5)}
+          currentlyPlaying={currentSound}
+          isPlaying={isPlaying}
+          onPlay={handlePlaySound}
+          onSelect={handleSelectSound}
+        />
+        
         {/* Sound Browser */}
         <SoundBrowser
           sounds={sounds}
@@ -147,6 +158,7 @@ function App() {
           isPlaying={isPlaying}
           favorites={favorites}
           recentlyPlayed={recentlyPlayed}
+          getPlayCount={getPlayCount}
           onPlaySound={handlePlaySound}
           onSelectSound={handleSelectSound}
           onToggleFavorite={toggleFavorite}

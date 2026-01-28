@@ -19,6 +19,7 @@ interface SoundBrowserProps {
   isPlaying: boolean;
   favorites: string[];
   recentlyPlayed: string[];
+  getPlayCount?: (soundId: string) => number;
   onPlaySound: (sound: ProcessedSound) => void;
   onSelectSound: (sound: ProcessedSound) => void;
   onToggleFavorite: (soundId: string) => void;
@@ -36,6 +37,7 @@ export function SoundBrowser({
   isPlaying,
   favorites,
   recentlyPlayed,
+  getPlayCount,
   onPlaySound,
   onSelectSound,
   onToggleFavorite,
@@ -242,6 +244,7 @@ export function SoundBrowser({
               isPlaying={isPlaying && currentlyPlaying === sound.id}
               isSelected={selectedSound?.id === sound.id}
               isFavorite={favorites.includes(sound.id)}
+              playCount={getPlayCount?.(sound.id) || 0}
               onPlay={() => onPlaySound(sound)}
               onSelect={() => onSelectSound(sound)}
               onToggleFavorite={() => onToggleFavorite(sound.id)}
@@ -258,6 +261,7 @@ export function SoundBrowser({
               isPlaying={isPlaying && currentlyPlaying === sound.id}
               isSelected={selectedSound?.id === sound.id}
               isFavorite={favorites.includes(sound.id)}
+              playCount={getPlayCount?.(sound.id) || 0}
               onPlay={() => onPlaySound(sound)}
               onSelect={() => onSelectSound(sound)}
               onToggleFavorite={() => onToggleFavorite(sound.id)}
