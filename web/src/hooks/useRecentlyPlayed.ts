@@ -1,13 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { getRecentlyPlayed, addRecentlyPlayed as addRecentStorage } from '../lib/storage';
 
 export function useRecentlyPlayed() {
-  const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([]);
-
-  // Load on mount
-  useEffect(() => {
-    setRecentlyPlayed(getRecentlyPlayed());
-  }, []);
+  // Initialize with stored recent plays
+  const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>(() => getRecentlyPlayed());
 
   const addRecentlyPlayed = useCallback((soundId: string) => {
     const updated = addRecentStorage(soundId);

@@ -26,6 +26,7 @@ export function RandomBrowse({
   // Shuffle sounds on mount
   useEffect(() => {
     const shuffled = [...sounds].sort(() => Math.random() - 0.5);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initialization from props
     setShuffledSounds(shuffled);
   }, [sounds]);
 

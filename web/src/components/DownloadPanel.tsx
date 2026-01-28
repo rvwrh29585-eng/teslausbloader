@@ -16,6 +16,7 @@ export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: D
     try {
       // Try File System Access API first (Chrome/Edge)
       if ('showSaveFilePicker' in window) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- File System Access API
         const handle = await (window as any).showSaveFilePicker({
           suggestedName: 'LockChime.wav',
           types: [

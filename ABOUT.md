@@ -45,11 +45,14 @@ Tesla Lock Sound Loader lets you customize your Tesla's lock chime with 200+ sou
 ### Features
 
 - **200+ sounds** from movies, games, cartoons, and more
+- **Channels** - Browse by vibe: Funny, Sci-Fi, Gaming, Retro, Movies, Cute
+- **Seasonal Channels** - Spooky (Oct), Holiday (Dec), etc. auto-highlight
 - **Quick Picks** - 5 random sounds with shuffle
 - **Most Popular** - See what others are playing
 - **Favorites** - Save sounds you like
 - **Recently Played** - Quick access to sounds you've tried
 - **Search & Categories** - Find sounds fast
+- **Share** - Share any sound with a direct link
 - **Grid/List view** - Switch layouts for browsing
 - **Offline caching** - Cache sounds for offline access
 - **Worldwide/Personal stats** - See global or your own stats

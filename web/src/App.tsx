@@ -34,7 +34,7 @@ function App() {
     ? getChannelSounds(sounds, activeChannel)
     : sounds;
 
-  // Handle shared sound URL parameter
+  // Handle shared sound URL parameter (one-time initialization)
   useEffect(() => {
     if (sounds.length === 0) return;
     
@@ -44,6 +44,7 @@ function App() {
     if (sharedSoundId) {
       const sound = sounds.find(s => s.id === sharedSoundId);
       if (sound) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL param initialization
         setSelectedSound(sound);
         showToast(`Loaded shared sound: ${sound.displayName}`);
         // Clear the URL parameter without refresh

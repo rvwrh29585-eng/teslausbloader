@@ -23,8 +23,10 @@ export function QuickPicks({
     setPicks(shuffled.slice(0, 5));
   }, [sounds]);
 
+  // Initialize picks on first load
   useEffect(() => {
     if (sounds.length > 0 && picks.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time initialization
       shuffle();
     }
   }, [sounds, picks.length, shuffle]);

@@ -1,13 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { getFavorites, toggleFavorite as toggleFavoriteStorage } from '../lib/storage';
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<string[]>([]);
-
-  // Load favorites on mount
-  useEffect(() => {
-    setFavorites(getFavorites());
-  }, []);
+  // Initialize with stored favorites
+  const [favorites, setFavorites] = useState<string[]>(() => getFavorites());
 
   const isFavorite = useCallback((soundId: string) => {
     return favorites.includes(soundId);

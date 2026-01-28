@@ -19,13 +19,14 @@ export function CacheManager({ sounds }: CacheManagerProps) {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [showCachePrompt, setShowCachePrompt] = useState(false);
 
-  // Check if we should prompt for caching
+  // Check if we should prompt for caching (one-time initialization)
   useEffect(() => {
     const prefs = getPreferences();
     if (!prefs.cacheEnabled && sounds.length > 0) {
       // Only show prompt once per session
       const prompted = sessionStorage.getItem('cache-prompted');
       if (!prompted) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time session init
         setShowCachePrompt(true);
         sessionStorage.setItem('cache-prompted', 'true');
       }
