@@ -6,6 +6,8 @@
 
 A web app for browsing, previewing, and downloading custom lock sounds for your Tesla. Choose from 200+ sounds including movies, video games, cartoons, and more.
 
+> **Sound Source:** All sounds courtesy of [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/) - this is an unofficial browser for their excellent curated collection.
+
 **Live Site:** [teslausbloader.pages.dev](https://teslausbloader.pages.dev)
 
 ![Tesla Lock Sound Loader Screenshot](./screenshot01.jpg)
@@ -109,9 +111,14 @@ Contributions welcome! Feel free to:
 
 ---
 
-## Credits
+## Sound Source & Credits
 
-- Sound files from [notateslaapp.com](https://www.notateslaapp.com/tesla-custom-lock-sounds/)
+> **All sounds are sourced from [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/).**
+> 
+> This project is an unofficial browser/loader for their excellent curated collection of Tesla lock sounds. All credit for collecting, optimizing, and maintaining the sound library goes to the [Not a Tesla App](https://www.notateslaapp.com) team.
+
+### Additional Credits
+
 - Built with [Claude](https://claude.ai) AI assistance
 - Hosted on [Cloudflare Pages](https://pages.cloudflare.com)
 
