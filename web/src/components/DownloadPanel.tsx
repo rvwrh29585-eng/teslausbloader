@@ -76,16 +76,23 @@ export function DownloadPanel({ selectedSound, onClearSelection }: DownloadPanel
             <button
               onClick={onClearSelection}
               className="p-2 text-neutral-500 hover:text-white transition-colors"
+              title="Clear selection"
             >
               <XIcon className="w-5 h-5" />
             </button>
-            <button
-              onClick={handleDownload}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500 transition-colors"
-            >
-              <DownloadIcon className="w-5 h-5" />
-              Download as LockChime.wav
-            </button>
+            <div className="text-right">
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500 transition-colors"
+              >
+                <DownloadIcon className="w-5 h-5" />
+                Download as LockChime.wav
+              </button>
+              <p className="text-[10px] text-amber-500/80 mt-1 flex items-center justify-end gap-1">
+                <WarningIcon className="w-3 h-3" />
+                Delete old file first to avoid renaming
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -114,6 +121,19 @@ export function DownloadPanel({ selectedSound, onClearSelection }: DownloadPanel
                 <li>Plug it into your Tesla's glovebox USB port</li>
                 <li>Go to <span className="text-white">Toybox → Boombox → Lock Sound → USB</span></li>
               </ol>
+              
+              <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                <div className="flex gap-2">
+                  <WarningIcon className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="text-amber-400 font-medium">File must be named exactly LockChime.wav</p>
+                    <p className="text-amber-300/70 mt-1">
+                      If your browser renamed it to <span className="font-mono">LockChime (1).wav</span> or similar, 
+                      delete the old file first, then re-download.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <button
@@ -157,6 +177,14 @@ function CheckIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+function WarningIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
     </svg>
   );
 }
