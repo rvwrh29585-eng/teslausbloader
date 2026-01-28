@@ -1,0 +1,12 @@
+# Cached sound files (downloaded at runtime)
+locksounds/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

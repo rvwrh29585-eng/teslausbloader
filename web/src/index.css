@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* Tesla-themed dark mode */
+:root {
+  --tesla-red: #e82127;
+  --tesla-dark: #171717;
+  --tesla-gray: #393c41;
+}
+
+body {
+  @apply bg-neutral-950 text-white min-h-screen antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-600;
+}

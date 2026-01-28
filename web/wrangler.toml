@@ -1,0 +1,9 @@
+# Cloudflare Pages configuration
+name = "tesla-lock-sounds"
+compatibility_date = "2024-01-01"
+
+# Pages-specific settings are configured in the Cloudflare dashboard
+# This file is mainly for local development with wrangler pages dev
+
+[build]
+command = "npm run build"
