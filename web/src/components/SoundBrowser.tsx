@@ -185,6 +185,8 @@ export function SoundBrowser({
               categories={categories}
               selected={selectedCategory}
               onSelect={setSelectedCategory}
+              sounds={sounds}
+              favorites={favorites}
             />
           </div>
         )}
