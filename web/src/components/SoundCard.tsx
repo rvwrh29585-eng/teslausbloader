@@ -2,11 +2,14 @@ import { useState } from 'react';
 import type { ProcessedSound } from '../hooks/useSounds';
 import { formatCategoryName } from '../lib/api';
 
+export type CardVariant = 'grid' | 'list';
+
 interface SoundCardProps {
   sound: ProcessedSound;
   isPlaying: boolean;
   isSelected: boolean;
   isFavorite: boolean;
+  variant?: CardVariant;
   onPlay: () => void;
   onSelect: () => void;
   onToggleFavorite: () => void;
@@ -17,6 +20,7 @@ export function SoundCard({
   isPlaying, 
   isSelected, 
   isFavorite,
+  variant = 'grid',
   onPlay, 
   onSelect,
   onToggleFavorite 
@@ -27,14 +31,93 @@ export function SoundCard({
     e.stopPropagation();
     setHeartAnimating(true);
     onToggleFavorite();
-    // Reset animation after it completes
     setTimeout(() => setHeartAnimating(false), 300);
   };
 
+  if (variant === 'list') {
+    return (
+      <div
+        className={`
+          group flex items-center gap-3 px-3 py-2 rounded-lg border transition-all duration-150
+          hover:bg-neutral-800/50
+          ${isSelected 
+            ? 'bg-red-600/10 border-red-500/50' 
+            : 'bg-neutral-900/50 border-neutral-800/50 hover:border-neutral-700'
+          }
+        `}
+      >
+        {/* Play button */}
+        <button
+          onClick={onPlay}
+          className={`
+            flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150
+            hover:scale-110 active:scale-95
+            ${isPlaying
+              ? 'bg-red-600 text-white'
+              : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white'
+            }
+          `}
+        >
+          {isPlaying ? (
+            <PauseIcon className="w-3.5 h-3.5" />
+          ) : (
+            <PlayIcon className="w-3.5 h-3.5 ml-0.5" />
+          )}
+        </button>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-white text-sm truncate" title={sound.displayName}>
+              {sound.displayName}
+            </span>
+            <span className="text-xs text-neutral-500 flex-shrink-0">
+              {formatCategoryName(sound.category)}
+            </span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={handleFavoriteClick}
+            className={`
+              p-1.5 rounded-full transition-all duration-200
+              ${isFavorite
+                ? 'text-pink-500 hover:text-pink-400'
+                : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
+              }
+              ${heartAnimating ? 'animate-heart-pop' : ''}
+              hover:scale-110 active:scale-95
+            `}
+          >
+            <HeartIcon className="w-4 h-4" filled={isFavorite} />
+          </button>
+          
+          <button
+            onClick={onSelect}
+            className={`
+              p-1.5 rounded-full transition-all duration-150
+              hover:scale-110 active:scale-95
+              ${isSelected
+                ? 'bg-red-600 text-white'
+                : 'text-neutral-500 hover:text-white hover:bg-red-600'
+              }
+            `}
+            title="Select this sound"
+          >
+            <CheckIcon className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Grid variant (compact)
   return (
     <div
       className={`
-        group relative p-4 rounded-xl border transition-all duration-200
+        group relative p-3 rounded-lg border transition-all duration-200
         hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20
         ${isSelected 
           ? 'bg-red-600/20 border-red-500 scale-[1.02]' 
@@ -42,56 +125,55 @@ export function SoundCard({
         }
       `}
     >
-      {/* Favorite button - top right */}
-      <button
-        onClick={handleFavoriteClick}
-        className={`
-          absolute top-3 right-3 p-1.5 rounded-full transition-all duration-200
-          ${isFavorite
-            ? 'text-pink-500 hover:text-pink-400 scale-100'
-            : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
-          }
-          ${heartAnimating ? 'animate-heart-pop' : ''}
-          hover:scale-110 active:scale-95
-        `}
-        title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-      >
-        <HeartIcon className="w-5 h-5" filled={isFavorite} />
-      </button>
-      
-      {/* Category badge */}
-      <div className="text-xs text-neutral-500 mb-1 transition-colors group-hover:text-neutral-400">
-        {formatCategoryName(sound.category)}
+      {/* Top row: category + favorite */}
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] text-neutral-500 uppercase tracking-wide">
+          {formatCategoryName(sound.category)}
+        </span>
+        <button
+          onClick={handleFavoriteClick}
+          className={`
+            p-1 rounded-full transition-all duration-200
+            ${isFavorite
+              ? 'text-pink-500 hover:text-pink-400'
+              : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
+            }
+            ${heartAnimating ? 'animate-heart-pop' : ''}
+            hover:scale-110 active:scale-95
+          `}
+        >
+          <HeartIcon className="w-4 h-4" filled={isFavorite} />
+        </button>
       </div>
       
       {/* Sound name */}
-      <h3 className="font-medium text-white mb-3 truncate pr-6" title={sound.displayName}>
+      <h3 className="font-medium text-white text-sm mb-2 truncate" title={sound.displayName}>
         {sound.displayName}
       </h3>
       
-      {/* Actions */}
-      <div className="flex gap-2">
+      {/* Actions - inline */}
+      <div className="flex gap-1.5">
         <button
           onClick={onPlay}
           className={`
-            flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-150
-            flex items-center justify-center gap-2
+            flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all duration-150
+            flex items-center justify-center gap-1.5
             hover:scale-[1.02] active:scale-[0.98]
             ${isPlaying
-              ? 'bg-red-600 text-white shadow-lg shadow-red-600/25'
+              ? 'bg-red-600 text-white shadow-md shadow-red-600/25'
               : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
             }
           `}
         >
           {isPlaying ? (
             <>
-              <PauseIcon className="w-4 h-4" />
-              Playing
+              <PauseIcon className="w-3 h-3" />
+              <span>Stop</span>
             </>
           ) : (
             <>
-              <PlayIcon className="w-4 h-4" />
-              Preview
+              <PlayIcon className="w-3 h-3" />
+              <span>Play</span>
             </>
           )}
         </button>
@@ -99,23 +181,23 @@ export function SoundCard({
         <button
           onClick={onSelect}
           className={`
-            py-2 px-3 rounded-lg text-sm font-medium transition-all duration-150
+            py-1.5 px-2 rounded-md text-xs font-medium transition-all duration-150
             hover:scale-105 active:scale-95
             ${isSelected
-              ? 'bg-red-600 text-white shadow-lg shadow-red-600/25'
+              ? 'bg-red-600 text-white shadow-md shadow-red-600/25'
               : 'bg-neutral-800 text-neutral-300 hover:bg-red-600 hover:text-white'
             }
           `}
           title="Select this sound"
         >
-          <CheckIcon className="w-4 h-4" />
+          <CheckIcon className="w-3.5 h-3.5" />
         </button>
       </div>
       
       {/* Selected indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -left-2 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center animate-bounce-in shadow-lg shadow-red-600/50">
-          <CheckIcon className="w-4 h-4 text-white" />
+        <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center animate-bounce-in shadow-lg shadow-red-600/50">
+          <CheckIcon className="w-3 h-3 text-white" />
         </div>
       )}
     </div>
