@@ -189,11 +189,11 @@ export function useStats() {
       };
     });
     
-    // Debounce the flush
+    // Debounce the flush (3s to batch more events together)
     if (flushTimeout.current) {
       clearTimeout(flushTimeout.current);
     }
-    flushTimeout.current = window.setTimeout(flushEvents, 1000);
+    flushTimeout.current = window.setTimeout(flushEvents, 3000);
   }, [flushEvents]);
 
   const recordPlay = useCallback((soundId: string) => {

@@ -1,7 +1,6 @@
 // Stats tracking API using Cloudflare KV
-// KV key format: "stats:{soundId}" -> { plays: number, downloads: number }
-// Also: "stats:_global" -> { totalPlays: number, totalDownloads: number }
-// Also: "stats:_top" -> cached top sounds list
+// Optimized for free tier: single KV key stores all data
+// KV key: "stats:_all" -> { sounds: Record<id, SoundStats>, global: GlobalStats }
 
 interface Env {
   STATS: KVNamespace;
@@ -20,32 +19,32 @@ interface GlobalStats {
   lastUpdated: string;
 }
 
-// GET /api/stats - Get stats for all sounds or specific sound
+interface AllStats {
+  sounds: Record<string, SoundStats>;
+  global: GlobalStats;
+}
+
+const DEFAULT_STATS: AllStats = {
+  sounds: {},
+  global: { totalPlays: 0, totalDownloads: 0, totalFavorites: 0, lastUpdated: '' }
+};
+
+// GET /api/stats - Get all stats (single read)
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const url = new URL(context.request.url);
-  const soundId = url.searchParams.get('sound');
-  
   try {
-    // If requesting specific sound stats
-    if (soundId) {
-      const stats = await context.env.STATS.get(`stats:${soundId}`, 'json') as SoundStats | null;
-      return Response.json(stats || { plays: 0, downloads: 0 });
-    }
-    
-    // Get top sounds (cached list)
-    const topSounds = await context.env.STATS.get('stats:_top', 'json') as Record<string, SoundStats> | null;
-    const globalStats = await context.env.STATS.get('stats:_global', 'json') as GlobalStats | null;
+    const allStats = await context.env.STATS.get('stats:_all', 'json') as AllStats | null;
+    const data = allStats || DEFAULT_STATS;
     
     return Response.json({
-      global: globalStats || { totalPlays: 0, totalDownloads: 0, totalFavorites: 0 },
-      top: topSounds || {}
+      global: data.global,
+      top: data.sounds
     });
   } catch (e) {
     return Response.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 };
 
-// POST /api/stats - Record a play, download, or favorite event
+// POST /api/stats - Record event (single read + single write)
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body = await context.request.json() as { soundId: string; event: 'play' | 'download' | 'favorite' | 'unfavorite' };
@@ -55,46 +54,42 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return Response.json({ error: 'Invalid request' }, { status: 400 });
     }
     
-    // Get current stats for this sound
-    const currentStats = await context.env.STATS.get(`stats:${soundId}`, 'json') as SoundStats | null;
-    const stats: SoundStats = currentStats || { plays: 0, downloads: 0, favorites: 0 };
+    // For plays, use sampling (only record ~20% to reduce writes)
+    // Downloads and favorites are always recorded
+    if (event === 'play' && Math.random() > 0.2) {
+      return Response.json({ success: true, sampled: true });
+    }
     
-    // Increment/decrement the appropriate counter
+    // Single read
+    const allStats = await context.env.STATS.get('stats:_all', 'json') as AllStats | null;
+    const data: AllStats = allStats || { ...DEFAULT_STATS, sounds: {}, global: { ...DEFAULT_STATS.global } };
+    
+    // Get or create sound stats
+    if (!data.sounds[soundId]) {
+      data.sounds[soundId] = { plays: 0, downloads: 0, favorites: 0 };
+    }
+    const stats = data.sounds[soundId];
+    
+    // Update counters
     if (event === 'play') {
-      stats.plays++;
+      // Multiply by 5 to compensate for 20% sampling
+      stats.plays += 5;
+      data.global.totalPlays += 5;
     } else if (event === 'download') {
       stats.downloads++;
+      data.global.totalDownloads++;
     } else if (event === 'favorite') {
       stats.favorites++;
+      data.global.totalFavorites++;
     } else if (event === 'unfavorite') {
       stats.favorites = Math.max(0, stats.favorites - 1);
+      data.global.totalFavorites = Math.max(0, data.global.totalFavorites - 1);
     }
     
-    // Save updated stats
-    await context.env.STATS.put(`stats:${soundId}`, JSON.stringify(stats));
+    data.global.lastUpdated = new Date().toISOString();
     
-    // Update global stats
-    const globalStats = await context.env.STATS.get('stats:_global', 'json') as GlobalStats | null;
-    const global: GlobalStats = globalStats || { totalPlays: 0, totalDownloads: 0, totalFavorites: 0, lastUpdated: '' };
-    
-    if (event === 'play') {
-      global.totalPlays++;
-    } else if (event === 'download') {
-      global.totalDownloads++;
-    } else if (event === 'favorite') {
-      global.totalFavorites++;
-    } else if (event === 'unfavorite') {
-      global.totalFavorites = Math.max(0, global.totalFavorites - 1);
-    }
-    global.lastUpdated = new Date().toISOString();
-    
-    await context.env.STATS.put('stats:_global', JSON.stringify(global));
-    
-    // Update top sounds cache (simple approach: store all sounds with stats > 0)
-    // For low volume, this is fine. For high volume, would use a scheduled task.
-    const topSounds = await context.env.STATS.get('stats:_top', 'json') as Record<string, SoundStats> | null || {};
-    topSounds[soundId] = stats;
-    await context.env.STATS.put('stats:_top', JSON.stringify(topSounds));
+    // Single write
+    await context.env.STATS.put('stats:_all', JSON.stringify(data));
     
     return Response.json({ success: true, stats });
   } catch (e) {
