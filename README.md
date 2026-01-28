@@ -8,7 +8,7 @@ A web app for browsing, previewing, and downloading custom lock sounds for your 
 
 **Live Site:** [teslausbloader.pages.dev](https://teslausbloader.pages.dev)
 
-![Tesla Lock Sound Loader Screenshot](https://via.placeholder.com/800x400?text=Tesla+Lock+Sound+Loader)
+![Tesla Lock Sound Loader Screenshot](./screenshot01.jpg)
 
 ---
 
