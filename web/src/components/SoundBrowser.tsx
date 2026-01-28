@@ -17,12 +17,13 @@ interface SoundBrowserProps {
   currentlyPlaying: string | null;
   isPlaying: boolean;
   favorites: string[];
+  recentlyPlayed: string[];
   onPlaySound: (sound: ProcessedSound) => void;
   onSelectSound: (sound: ProcessedSound) => void;
   onToggleFavorite: (soundId: string) => void;
 }
 
-type FilterMode = 'all' | 'favorites';
+type FilterMode = 'all' | 'favorites' | 'recent';
 
 export function SoundBrowser({
   sounds,
@@ -31,6 +32,7 @@ export function SoundBrowser({
   currentlyPlaying,
   isPlaying,
   favorites,
+  recentlyPlayed,
   onPlaySound,
   onSelectSound,
   onToggleFavorite,
@@ -42,13 +44,20 @@ export function SoundBrowser({
 
   const filteredSounds = useFilteredSounds(sounds, searchQuery, selectedCategory);
   
-  // Apply favorites filter
+  // Apply filter mode
   const displayedSounds = useMemo(() => {
     if (filterMode === 'favorites') {
       return filteredSounds.filter(s => favorites.includes(s.id));
     }
+    if (filterMode === 'recent') {
+      // Preserve order of recently played (most recent first)
+      const recentSounds = recentlyPlayed
+        .map(id => filteredSounds.find(s => s.id === id))
+        .filter((s): s is ProcessedSound => s !== undefined);
+      return recentSounds;
+    }
     return filteredSounds;
-  }, [filteredSounds, filterMode, favorites]);
+  }, [filteredSounds, filterMode, favorites, recentlyPlayed]);
 
   return (
     <div className="space-y-6">
@@ -90,6 +99,24 @@ export function SoundBrowser({
                   </span>
                 )}
               </button>
+              <button
+                onClick={() => setFilterMode('recent')}
+                className={`
+                  px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5
+                  ${filterMode === 'recent'
+                    ? 'bg-neutral-800 text-white'
+                    : 'text-neutral-400 hover:text-white'
+                  }
+                `}
+              >
+                <ClockIcon className="w-4 h-4" />
+                Recent
+                {recentlyPlayed.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">
+                    {recentlyPlayed.length}
+                  </span>
+                )}
+              </button>
             </div>
             
             <button
@@ -127,6 +154,17 @@ export function SoundBrowser({
             <>
               <HeartIcon className="w-12 h-12 text-neutral-700 mx-auto mb-3" />
               <div className="text-neutral-500 mb-2">No favorites yet</div>
+              <button
+                onClick={() => setFilterMode('all')}
+                className="text-red-500 hover:text-red-400"
+              >
+                Browse all sounds
+              </button>
+            </>
+          ) : filterMode === 'recent' ? (
+            <>
+              <ClockIcon className="w-12 h-12 text-neutral-700 mx-auto mb-3" />
+              <div className="text-neutral-500 mb-2">No recently played sounds</div>
               <button
                 onClick={() => setFilterMode('all')}
                 className="text-red-500 hover:text-red-400"
@@ -181,6 +219,14 @@ function HeartIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  );
+}
+
+function ClockIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   );
 }

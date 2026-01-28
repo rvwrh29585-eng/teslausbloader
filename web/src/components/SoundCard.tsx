@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { ProcessedSound } from '../hooks/useSounds';
 import { formatCategoryName } from '../lib/api';
 
@@ -20,28 +21,38 @@ export function SoundCard({
   onSelect,
   onToggleFavorite 
 }: SoundCardProps) {
+  const [heartAnimating, setHeartAnimating] = useState(false);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setHeartAnimating(true);
+    onToggleFavorite();
+    // Reset animation after it completes
+    setTimeout(() => setHeartAnimating(false), 300);
+  };
+
   return (
     <div
       className={`
         group relative p-4 rounded-xl border transition-all duration-200
+        hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20
         ${isSelected 
-          ? 'bg-red-600/20 border-red-500' 
+          ? 'bg-red-600/20 border-red-500 scale-[1.02]' 
           : 'bg-neutral-900 border-neutral-800 hover:border-neutral-700 hover:bg-neutral-800/50'
         }
       `}
     >
       {/* Favorite button - top right */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleFavorite();
-        }}
+        onClick={handleFavoriteClick}
         className={`
-          absolute top-3 right-3 p-1.5 rounded-full transition-all
+          absolute top-3 right-3 p-1.5 rounded-full transition-all duration-200
           ${isFavorite
-            ? 'text-pink-500 hover:text-pink-400'
+            ? 'text-pink-500 hover:text-pink-400 scale-100'
             : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
           }
+          ${heartAnimating ? 'animate-heart-pop' : ''}
+          hover:scale-110 active:scale-95
         `}
         title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       >
@@ -49,7 +60,7 @@ export function SoundCard({
       </button>
       
       {/* Category badge */}
-      <div className="text-xs text-neutral-500 mb-1">
+      <div className="text-xs text-neutral-500 mb-1 transition-colors group-hover:text-neutral-400">
         {formatCategoryName(sound.category)}
       </div>
       
@@ -63,10 +74,11 @@ export function SoundCard({
         <button
           onClick={onPlay}
           className={`
-            flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all
+            flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-150
             flex items-center justify-center gap-2
+            hover:scale-[1.02] active:scale-[0.98]
             ${isPlaying
-              ? 'bg-red-600 text-white'
+              ? 'bg-red-600 text-white shadow-lg shadow-red-600/25'
               : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
             }
           `}
@@ -87,9 +99,10 @@ export function SoundCard({
         <button
           onClick={onSelect}
           className={`
-            py-2 px-3 rounded-lg text-sm font-medium transition-all
+            py-2 px-3 rounded-lg text-sm font-medium transition-all duration-150
+            hover:scale-105 active:scale-95
             ${isSelected
-              ? 'bg-red-600 text-white'
+              ? 'bg-red-600 text-white shadow-lg shadow-red-600/25'
               : 'bg-neutral-800 text-neutral-300 hover:bg-red-600 hover:text-white'
             }
           `}
@@ -101,7 +114,7 @@ export function SoundCard({
       
       {/* Selected indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -left-2 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center animate-bounce-in shadow-lg shadow-red-600/50">
           <CheckIcon className="w-4 h-4 text-white" />
         </div>
       )}
@@ -112,13 +125,13 @@ export function SoundCard({
 function HeartIcon({ className, filled }: { className?: string; filled?: boolean }) {
   if (filled) {
     return (
-      <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+      <svg className={`${className} transition-transform`} fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
       </svg>
     );
   }
   return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`${className} transition-transform`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
     </svg>
   );

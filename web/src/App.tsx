@@ -3,6 +3,7 @@ import { useSounds } from './hooks/useSounds';
 import type { ProcessedSound } from './hooks/useSounds';
 import { useAudio } from './hooks/useAudio';
 import { useFavorites } from './hooks/useFavorites';
+import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
 import { Hero } from './components/Hero';
 import { QuickPicks } from './components/QuickPicks';
 import { SoundBrowser } from './components/SoundBrowser';
@@ -16,12 +17,14 @@ function App() {
   const { sounds, categories, loading, error } = useSounds();
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
+  const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
   const handlePlaySound = useCallback((sound: ProcessedSound) => {
     play(sound.url, sound.id);
-  }, [play]);
+    addRecentlyPlayed(sound.id);
+  }, [play, addRecentlyPlayed]);
 
   const handleSelectSound = useCallback((sound: ProcessedSound) => {
     setSelectedSound(sound);
@@ -133,6 +136,7 @@ function App() {
           currentlyPlaying={currentSound}
           isPlaying={isPlaying}
           favorites={favorites}
+          recentlyPlayed={recentlyPlayed}
           onPlaySound={handlePlaySound}
           onSelectSound={handleSelectSound}
           onToggleFavorite={toggleFavorite}

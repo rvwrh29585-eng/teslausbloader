@@ -3,6 +3,8 @@
 const CACHE_NAME = 'tesla-sounds-v1';
 const PREFERENCES_KEY = 'tesla-preferences';
 const FAVORITES_KEY = 'tesla-favorites';
+const RECENTLY_PLAYED_KEY = 'tesla-recently-played';
+const MAX_RECENTLY_PLAYED = 10;
 
 // ============================================================================
 // FAVORITES
@@ -48,6 +50,34 @@ export function toggleFavorite(soundId: string): { favorites: string[]; isFavori
   } else {
     return { favorites: addFavorite(soundId), isFavorite: true };
   }
+}
+
+// ============================================================================
+// RECENTLY PLAYED
+// ============================================================================
+
+export function getRecentlyPlayed(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENTLY_PLAYED_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error('Failed to load recently played:', e);
+  }
+  return [];
+}
+
+export function addRecentlyPlayed(soundId: string): string[] {
+  const recent = getRecentlyPlayed().filter(id => id !== soundId);
+  recent.unshift(soundId);
+  const trimmed = recent.slice(0, MAX_RECENTLY_PLAYED);
+  localStorage.setItem(RECENTLY_PLAYED_KEY, JSON.stringify(trimmed));
+  return trimmed;
+}
+
+export function clearRecentlyPlayed(): void {
+  localStorage.removeItem(RECENTLY_PLAYED_KEY);
 }
 
 // ============================================================================
