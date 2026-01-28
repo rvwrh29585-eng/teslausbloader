@@ -6,6 +6,7 @@ import { useFavorites } from './hooks/useFavorites';
 import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
 import { useStats } from './hooks/useStats';
 import { Hero } from './components/Hero';
+import { StatsToggle } from './components/StatsToggle';
 import { QuickPicks } from './components/QuickPicks';
 import { MostPopular } from './components/MostPopular';
 import { SoundBrowser } from './components/SoundBrowser';
@@ -20,7 +21,7 @@ function App() {
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
-  const { recordPlay, recordDownload, recordFavorite, getPlayCount, getTopSounds, getTopFavorited, globalStats } = useStats();
+  const { recordPlay, recordDownload, recordFavorite, getPlayCount, getTopSounds, getTopFavorited, globalStats, mode, setMode } = useStats();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
@@ -89,14 +90,7 @@ function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Tesla Lock Sounds</h1>
-                <p className="text-sm text-neutral-500">
-                  {sounds.length} sounds
-                  {globalStats.totalPlays > 0 && (
-                    <span className="ml-2 text-neutral-600">
-                      • {globalStats.totalPlays.toLocaleString()} plays
-                    </span>
-                  )}
-                </p>
+                <p className="text-sm text-neutral-500">{sounds.length} sounds available</p>
               </div>
             </div>
             
@@ -135,6 +129,13 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 py-6">
         {/* Hero section */}
         <Hero />
+        
+        {/* Stats Mode Toggle */}
+        <StatsToggle
+          mode={mode}
+          onModeChange={setMode}
+          globalStats={globalStats}
+        />
         
         {/* Quick Picks */}
         <QuickPicks
