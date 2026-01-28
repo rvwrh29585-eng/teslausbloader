@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react';
 import { useSounds } from './hooks/useSounds';
 import type { ProcessedSound } from './hooks/useSounds';
 import { useAudio } from './hooks/useAudio';
+import { useFavorites } from './hooks/useFavorites';
+import { Hero } from './components/Hero';
+import { QuickPicks } from './components/QuickPicks';
 import { SoundBrowser } from './components/SoundBrowser';
 import { RandomBrowse } from './components/RandomBrowse';
 import { DownloadPanel } from './components/DownloadPanel';
@@ -12,6 +15,7 @@ type ViewMode = 'browse' | 'random';
 function App() {
   const { sounds, categories, loading, error } = useSounds();
   const { currentSound, isPlaying, play, stop } = useAudio();
+  const { favorites, toggleFavorite } = useFavorites();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
@@ -109,14 +113,29 @@ function App() {
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Hero section */}
+        <Hero />
+        
+        {/* Quick Picks */}
+        <QuickPicks
+          sounds={sounds}
+          currentlyPlaying={currentSound}
+          isPlaying={isPlaying}
+          onPlay={handlePlaySound}
+          onSelect={handleSelectSound}
+        />
+        
+        {/* Sound Browser */}
         <SoundBrowser
           sounds={sounds}
           categories={categories}
           selectedSound={selectedSound}
           currentlyPlaying={currentSound}
           isPlaying={isPlaying}
+          favorites={favorites}
           onPlaySound={handlePlaySound}
           onSelectSound={handleSelectSound}
+          onToggleFavorite={toggleFavorite}
         />
       </main>
 

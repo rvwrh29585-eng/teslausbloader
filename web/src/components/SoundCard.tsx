@@ -5,11 +5,21 @@ interface SoundCardProps {
   sound: ProcessedSound;
   isPlaying: boolean;
   isSelected: boolean;
+  isFavorite: boolean;
   onPlay: () => void;
   onSelect: () => void;
+  onToggleFavorite: () => void;
 }
 
-export function SoundCard({ sound, isPlaying, isSelected, onPlay, onSelect }: SoundCardProps) {
+export function SoundCard({ 
+  sound, 
+  isPlaying, 
+  isSelected, 
+  isFavorite,
+  onPlay, 
+  onSelect,
+  onToggleFavorite 
+}: SoundCardProps) {
   return (
     <div
       className={`
@@ -20,13 +30,31 @@ export function SoundCard({ sound, isPlaying, isSelected, onPlay, onSelect }: So
         }
       `}
     >
+      {/* Favorite button - top right */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite();
+        }}
+        className={`
+          absolute top-3 right-3 p-1.5 rounded-full transition-all
+          ${isFavorite
+            ? 'text-pink-500 hover:text-pink-400'
+            : 'text-neutral-600 hover:text-pink-500 opacity-0 group-hover:opacity-100'
+          }
+        `}
+        title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        <HeartIcon className="w-5 h-5" filled={isFavorite} />
+      </button>
+      
       {/* Category badge */}
       <div className="text-xs text-neutral-500 mb-1">
         {formatCategoryName(sound.category)}
       </div>
       
       {/* Sound name */}
-      <h3 className="font-medium text-white mb-3 truncate" title={sound.displayName}>
+      <h3 className="font-medium text-white mb-3 truncate pr-6" title={sound.displayName}>
         {sound.displayName}
       </h3>
       
@@ -73,11 +101,26 @@ export function SoundCard({ sound, isPlaying, isSelected, onPlay, onSelect }: So
       
       {/* Selected indicator */}
       {isSelected && (
-        <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
           <CheckIcon className="w-4 h-4 text-white" />
         </div>
       )}
     </div>
+  );
+}
+
+function HeartIcon({ className, filled }: { className?: string; filled?: boolean }) {
+  if (filled) {
+    return (
+      <svg className={className} fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
   );
 }
 

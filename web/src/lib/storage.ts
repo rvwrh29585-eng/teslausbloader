@@ -2,6 +2,57 @@
 
 const CACHE_NAME = 'tesla-sounds-v1';
 const PREFERENCES_KEY = 'tesla-preferences';
+const FAVORITES_KEY = 'tesla-favorites';
+
+// ============================================================================
+// FAVORITES
+// ============================================================================
+
+export function getFavorites(): string[] {
+  try {
+    const stored = localStorage.getItem(FAVORITES_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error('Failed to load favorites:', e);
+  }
+  return [];
+}
+
+export function saveFavorites(favorites: string[]): void {
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+}
+
+export function addFavorite(soundId: string): string[] {
+  const favorites = getFavorites();
+  if (!favorites.includes(soundId)) {
+    favorites.push(soundId);
+    saveFavorites(favorites);
+  }
+  return favorites;
+}
+
+export function removeFavorite(soundId: string): string[] {
+  const favorites = getFavorites().filter(id => id !== soundId);
+  saveFavorites(favorites);
+  return favorites;
+}
+
+export function toggleFavorite(soundId: string): { favorites: string[]; isFavorite: boolean } {
+  const favorites = getFavorites();
+  const isFavorite = favorites.includes(soundId);
+  
+  if (isFavorite) {
+    return { favorites: removeFavorite(soundId), isFavorite: false };
+  } else {
+    return { favorites: addFavorite(soundId), isFavorite: true };
+  }
+}
+
+// ============================================================================
+// PREFERENCES
+// ============================================================================
 
 export interface Preferences {
   cacheEnabled: boolean;
