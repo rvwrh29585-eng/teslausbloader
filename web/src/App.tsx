@@ -4,6 +4,7 @@ import type { ProcessedSound } from './hooks/useSounds';
 import { useAudio } from './hooks/useAudio';
 import { useFavorites } from './hooks/useFavorites';
 import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
+import { useStats } from './hooks/useStats';
 import { Hero } from './components/Hero';
 import { QuickPicks } from './components/QuickPicks';
 import { SoundBrowser } from './components/SoundBrowser';
@@ -18,13 +19,15 @@ function App() {
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
+  const { recordPlay, recordDownload, globalStats } = useStats();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
 
   const handlePlaySound = useCallback((sound: ProcessedSound) => {
     play(sound.url, sound.id);
     addRecentlyPlayed(sound.id);
-  }, [play, addRecentlyPlayed]);
+    recordPlay(sound.id);
+  }, [play, addRecentlyPlayed, recordPlay]);
 
   const handleSelectSound = useCallback((sound: ProcessedSound) => {
     setSelectedSound(sound);
@@ -79,7 +82,14 @@ function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Tesla Lock Sounds</h1>
-                <p className="text-sm text-neutral-500">{sounds.length} sounds available</p>
+                <p className="text-sm text-neutral-500">
+                  {sounds.length} sounds
+                  {globalStats.totalPlays > 0 && (
+                    <span className="ml-2 text-neutral-600">
+                      • {globalStats.totalPlays.toLocaleString()} plays
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
             
@@ -159,6 +169,7 @@ function App() {
       <DownloadPanel
         selectedSound={selectedSound}
         onClearSelection={handleClearSelection}
+        onDownload={recordDownload}
       />
 
       {/* Cache manager */}

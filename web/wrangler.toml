@@ -7,3 +7,10 @@ compatibility_date = "2024-01-01"
 
 [build]
 command = "npm run build"
+
+# KV namespace for stats tracking
+# For production: Create KV namespace in Cloudflare dashboard and bind to STATS
+# For local dev: wrangler will create a local KV store
+[[kv_namespaces]]
+binding = "STATS"
+id = "placeholder" # Replace with actual KV namespace ID after creating in dashboard

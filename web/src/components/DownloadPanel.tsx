@@ -4,9 +4,10 @@ import type { ProcessedSound } from '../hooks/useSounds';
 interface DownloadPanelProps {
   selectedSound: ProcessedSound | null;
   onClearSelection: () => void;
+  onDownload?: (soundId: string) => void;
 }
 
-export function DownloadPanel({ selectedSound, onClearSelection }: DownloadPanelProps) {
+export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: DownloadPanelProps) {
   const [showInstructions, setShowInstructions] = useState(false);
 
   const handleDownload = async () => {
@@ -32,6 +33,8 @@ export function DownloadPanel({ selectedSound, onClearSelection }: DownloadPanel
         await writable.write(blob);
         await writable.close();
         
+        // Record the download
+        onDownload?.(selectedSound.id);
         setShowInstructions(true);
         return;
       }
@@ -53,6 +56,8 @@ export function DownloadPanel({ selectedSound, onClearSelection }: DownloadPanel
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
+    // Record the download
+    onDownload?.(selectedSound.id);
     setShowInstructions(true);
   };
 
