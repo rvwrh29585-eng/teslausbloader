@@ -1,5 +1,7 @@
 // Cloudflare Pages Function: GET /api/audio/:file
-// Proxies audio files from notateslaapp.com
+// Serves audio files from GitHub first, fallback to notateslaapp.com
+
+const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/rvwrh29585-eng/teslausbloader/main/sounds';
 
 export const onRequestGet: PagesFunction = async (context) => {
   const { file } = context.params;
@@ -16,28 +18,38 @@ export const onRequestGet: PagesFunction = async (context) => {
     return new Response('Invalid filename', { status: 400 });
   }
   
-  // Extract the base name without extension
-  const baseName = filename.replace(/\.wav$/i, '');
+  // Ensure .wav extension
+  const wavFilename = filename.endsWith('.wav') ? filename : `${filename}.wav`;
   
-  // Determine the category path from the filename
-  // Files are stored in /assets/audio/category/name.wav on the source site
-  // We need to figure out the category from the filename
-  // Format: category_soundname.wav -> /assets/audio/category/category_soundname.wav
-  // But some are in subdirectories like: cartoons/pokemon_pikachu.wav
+  // Try GitHub first (our cached copy)
+  try {
+    const githubUrl = `${GITHUB_RAW_BASE}/${encodeURIComponent(wavFilename)}`;
+    const response = await fetch(githubUrl);
+    
+    if (response.ok) {
+      return new Response(response.body, {
+        headers: {
+          'Content-Type': 'audio/wav',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Access-Control-Allow-Origin': '*',
+          'X-Source': 'github',
+        },
+      });
+    }
+  } catch {
+    // GitHub failed, try fallback
+  }
   
-  // Try multiple possible paths
+  // Fallback: Try notateslaapp.com for new sounds not yet in our repo
+  const baseName = wavFilename.replace(/\.wav$/i, '');
   const possiblePaths = [
-    // Try with category prefix in path
     `/assets/audio/cartoons/${baseName}.wav`,
     `/assets/audio/video-games/${baseName}.wav`,
     `/assets/audio/shows-movies/${baseName}.wav`,
     `/assets/audio/retro/${baseName}.wav`,
     `/assets/audio/others/${baseName}.wav`,
-    // Direct path
     `/assets/audio/${baseName}.wav`,
   ];
-  
-  let audioResponse: Response | null = null;
   
   for (const path of possiblePaths) {
     try {
@@ -48,24 +60,19 @@ export const onRequestGet: PagesFunction = async (context) => {
       });
       
       if (response.ok) {
-        audioResponse = response;
-        break;
+        return new Response(response.body, {
+          headers: {
+            'Content-Type': 'audio/wav',
+            'Cache-Control': 'public, max-age=86400', // Cache for 1 day (might be new)
+            'Access-Control-Allow-Origin': '*',
+            'X-Source': 'notateslaapp',
+          },
+        });
       }
     } catch {
       continue;
     }
   }
   
-  if (!audioResponse) {
-    return new Response('Audio file not found', { status: 404 });
-  }
-  
-  // Stream the audio file back with proper headers
-  return new Response(audioResponse.body, {
-    headers: {
-      'Content-Type': 'audio/wav',
-      'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year
-      'Access-Control-Allow-Origin': '*',
-    },
-  });
+  return new Response('Audio file not found', { status: 404 });
 };

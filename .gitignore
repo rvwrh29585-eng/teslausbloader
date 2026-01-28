@@ -1,5 +1,7 @@
-# Cached sound files (downloaded at runtime)
+# Local cache from bash script (not needed in repo)
 locksounds/
+
+# Keep sounds/ folder - this is our GitHub-hosted copy
 
 # OS files
 .DS_Store
