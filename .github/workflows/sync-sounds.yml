@@ -1,0 +1,101 @@
+name: Sync Sounds from Source
+
+on:
+  # Run twice daily at 6am and 6pm UTC
+  schedule:
+    - cron: '0 6 * * *'   # 6am UTC
+    - cron: '0 18 * * *'  # 6pm UTC
+  
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Run sync script
+        run: node scripts/sync-sounds.js
+      
+      - name: Check for changes
+        id: check
+        run: |
+          if [ -f sync-result.json ]; then
+            ADDED=$(cat sync-result.json | jq '.added | length')
+            echo "added=$ADDED" >> $GITHUB_OUTPUT
+            
+            if [ "$ADDED" -gt "0" ]; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+              echo "📦 Found $ADDED new sounds to commit"
+            else
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+              echo "✅ No new sounds found"
+            fi
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Generate commit message
+        if: steps.check.outputs.has_changes == 'true'
+        id: message
+        run: |
+          ADDED=$(cat sync-result.json | jq -r '.added | length')
+          TOTAL=$(cat sync-result.json | jq -r '.total')
+          FILES=$(cat sync-result.json | jq -r '.added | join(", ")')
+          
+          # Truncate files list if too long
+          if [ ${#FILES} -gt 200 ]; then
+            FILES="${FILES:0:200}..."
+          fi
+          
+          MSG="Add $ADDED new sounds from notateslaapp.com
+
+          Automated sync detected new sounds available on the source site.
+          
+          Added: $FILES
+          Total sounds: $TOTAL"
+          
+          # Use heredoc to handle multiline
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add sounds/
+          git add sync-result.json
+          
+          git commit -m "${{ steps.message.outputs.message }}"
+          git push
+      
+      - name: Summary
+        run: |
+          if [ "${{ steps.check.outputs.has_changes }}" == "true" ]; then
+            echo "## 🎵 Sync Complete" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Added **${{ steps.check.outputs.added }}** new sounds" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The changes have been committed and pushed." >> $GITHUB_STEP_SUMMARY
+            echo "Cloudflare Pages will auto-deploy." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ✅ No Changes" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All sounds are already up to date." >> $GITHUB_STEP_SUMMARY
+          fi
