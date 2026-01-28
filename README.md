@@ -83,9 +83,20 @@ See [ABOUT.md](./ABOUT.md) for complete documentation including:
 ├── scripts/               # Sync scripts
 ├── sounds/                # 215+ WAV files
 ├── web/                   # React frontend
+├── script.sh              # Original CLI version (deprecated, see below)
 ├── ABOUT.md               # Complete documentation
 └── README.md              # This file
 ```
+
+### About `script.sh`
+
+The project started as a Bash CLI tool using `gum` for TUI before being rewritten as a web app. The original `script.sh` is preserved for reference but is no longer maintained. It demonstrates:
+- Scraping with `htmlq`
+- TUI menus with `gum`
+- Audio preview with `afplay`
+- USB detection with `diskutil`
+
+See [ABOUT.md](./ABOUT.md) for the full evolution story.
 
 ---
 

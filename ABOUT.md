@@ -387,6 +387,32 @@ Here are example prompts used during development:
 
 ---
 
+## Project Evolution
+
+This project went through several iterations:
+
+### Phase 1: Bash CLI (script.sh)
+The original version was a macOS command-line tool using:
+- `gum` for beautiful TUI menus
+- `htmlq` for HTML parsing
+- `curl` for downloads
+- `afplay` for audio preview
+- `diskutil` for USB detection
+
+It worked but had UX limitations (terminal refresh issues, no persistent favorites).
+
+### Phase 2: Web App
+Rewritten as a React web app for better UX:
+- Works on any device with a browser
+- Persistent favorites and stats
+- Share sounds via URL
+- Channels for vibe-based browsing
+- Automatic sound sync via GitHub Actions
+
+The original `script.sh` is preserved in the repo for reference.
+
+---
+
 ## Sound Source & Credits
 
 > **All sounds are sourced from [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/).**
