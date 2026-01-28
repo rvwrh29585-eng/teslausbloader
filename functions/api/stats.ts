@@ -29,10 +29,31 @@ const DEFAULT_STATS: AllStats = {
   global: { totalPlays: 0, totalDownloads: 0, totalFavorites: 0, lastUpdated: '' }
 };
 
-// GET /api/stats - Get all stats (single read)
+// GET /api/stats - Get all stats (with legacy migration)
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
-    const allStats = await context.env.STATS.get('stats:_all', 'json') as AllStats | null;
+    // Try new format first
+    let allStats = await context.env.STATS.get('stats:_all', 'json') as AllStats | null;
+    
+    // If no new format data, migrate from legacy keys
+    if (!allStats || Object.keys(allStats.sounds || {}).length === 0) {
+      const legacyTop = await context.env.STATS.get('stats:_top', 'json') as Record<string, SoundStats> | null;
+      const legacyGlobal = await context.env.STATS.get('stats:_global', 'json') as GlobalStats | null;
+      
+      if (legacyTop && Object.keys(legacyTop).length > 0) {
+        // Migrate legacy data to new format
+        allStats = {
+          sounds: legacyTop,
+          global: legacyGlobal || DEFAULT_STATS.global
+        };
+        
+        // Save migrated data (fire and forget to avoid extra latency)
+        context.waitUntil(
+          context.env.STATS.put('stats:_all', JSON.stringify(allStats))
+        );
+      }
+    }
+    
     const data = allStats || DEFAULT_STATS;
     
     return Response.json({
