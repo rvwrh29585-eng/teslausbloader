@@ -8,6 +8,7 @@ import { useStats } from './hooks/useStats';
 import { useToast } from './components/Toast';
 import { Hero } from './components/Hero';
 import { StatsToggle } from './components/StatsToggle';
+import { Channels, getChannelSounds } from './components/Channels';
 import { QuickPicks } from './components/QuickPicks';
 import { MostPopular } from './components/MostPopular';
 import { SoundBrowser } from './components/SoundBrowser';
@@ -26,6 +27,12 @@ function App() {
   const { showToast } = useToast();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
+  const [activeChannel, setActiveChannel] = useState<string | null>(null);
+  
+  // Filter sounds by active channel
+  const channelFilteredSounds = activeChannel 
+    ? getChannelSounds(sounds, activeChannel)
+    : sounds;
 
   // Handle shared sound URL parameter
   useEffect(() => {
@@ -136,7 +143,12 @@ function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Tesla Lock Sounds</h1>
-                <p className="text-sm text-neutral-500">{sounds.length} sounds available</p>
+                <p className="text-sm text-neutral-500">
+                  {activeChannel 
+                    ? `${channelFilteredSounds.length} of ${sounds.length} sounds`
+                    : `${sounds.length} sounds available`
+                  }
+                </p>
               </div>
             </div>
             
@@ -183,9 +195,16 @@ function App() {
           globalStats={globalStats}
         />
         
+        {/* Channels */}
+        <Channels
+          sounds={sounds}
+          activeChannel={activeChannel}
+          onSelectChannel={setActiveChannel}
+        />
+        
         {/* Quick Picks */}
         <QuickPicks
-          sounds={sounds}
+          sounds={channelFilteredSounds}
           currentlyPlaying={currentSound}
           isPlaying={isPlaying}
           onPlay={handlePlaySound}
@@ -205,7 +224,7 @@ function App() {
         
         {/* Sound Browser */}
         <SoundBrowser
-          sounds={sounds}
+          sounds={channelFilteredSounds}
           categories={categories}
           selectedSound={selectedSound}
           currentlyPlaying={currentSound}
