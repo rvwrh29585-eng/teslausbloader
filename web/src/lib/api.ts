@@ -10,7 +10,9 @@ export interface Sound {
 const API_BASE = '/api';
 
 export async function fetchSounds(): Promise<Sound[]> {
-  const response = await fetch(`${API_BASE}/sounds`);
+  const response = await fetch(`${API_BASE}/sounds`, {
+    cache: 'no-store', // Always get fresh list so new custom sounds appear without hard refresh
+  });
   if (!response.ok) {
     throw new Error('Failed to fetch sounds');
   }

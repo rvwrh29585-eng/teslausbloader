@@ -70,7 +70,7 @@ export const onRequestGet: PagesFunction = async (context) => {
     return new Response(JSON.stringify({ sounds }), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'no-cache, max-age=0', // Always revalidate so custom sounds show up after deploy
         'Access-Control-Allow-Origin': '*',
       },
     });
