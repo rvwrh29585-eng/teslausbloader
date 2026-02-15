@@ -1,7 +1,7 @@
 // Cloudflare Pages Function: GET /api/audio/:file
-// Serves audio files from GitHub first, fallback to notateslaapp.com
+// Serves audio from GitHub (sounds/ then soundscustom/), then notateslaapp.com
 
-const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/rvwrh29585-eng/teslausbloader/main/sounds';
+const GITHUB_RAW = 'https://raw.githubusercontent.com/rvwrh29585-eng/teslausbloader/main';
 
 export const onRequestGet: PagesFunction = async (context) => {
   const { file } = context.params;
@@ -20,27 +20,29 @@ export const onRequestGet: PagesFunction = async (context) => {
   
   // Ensure .wav extension
   const wavFilename = filename.endsWith('.wav') ? filename : `${filename}.wav`;
+  const encoded = encodeURIComponent(wavFilename);
   
-  // Try GitHub first (our cached copy)
-  try {
-    const githubUrl = `${GITHUB_RAW_BASE}/${encodeURIComponent(wavFilename)}`;
-    const response = await fetch(githubUrl);
-    
-    if (response.ok) {
-      return new Response(response.body, {
-        headers: {
-          'Content-Type': 'audio/wav',
-          'Cache-Control': 'public, max-age=31536000, immutable',
-          'Access-Control-Allow-Origin': '*',
-          'X-Source': 'github',
-        },
-      });
+  // Try GitHub: sounds/ then soundscustom/
+  for (const dir of ['sounds', 'soundscustom']) {
+    try {
+      const githubUrl = `${GITHUB_RAW}/${dir}/${encoded}`;
+      const response = await fetch(githubUrl);
+      if (response.ok) {
+        return new Response(response.body, {
+          headers: {
+            'Content-Type': 'audio/wav',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin': '*',
+            'X-Source': 'github',
+          },
+        });
+      }
+    } catch {
+      continue;
     }
-  } catch {
-    // GitHub failed, try fallback
   }
   
-  // Fallback: Try notateslaapp.com for new sounds not yet in our repo
+  // Fallback: Try notateslaapp.com for sounds not in our repo
   const baseName = wavFilename.replace(/\.wav$/i, '');
   const possiblePaths = [
     `/assets/audio/cartoons/${baseName}.wav`,

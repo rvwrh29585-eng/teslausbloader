@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: GET /api/sounds
-// Scrapes notateslaapp.com for lock sounds and returns JSON
+// Scrapes notateslaapp.com for lock sounds, merges with custom list from /custom-sounds.json
 
 interface Sound {
   name: string;
@@ -8,11 +8,6 @@ interface Sound {
 }
 
 export const onRequestGet: PagesFunction = async (context) => {
-  const cacheKey = 'sounds-list';
-  
-  // Check KV cache first (if available)
-  // For now, we'll rely on Cloudflare's edge cache
-  
   try {
     const response = await fetch('https://www.notateslaapp.com/tesla-custom-lock-sounds/', {
       headers: {
@@ -27,7 +22,6 @@ export const onRequestGet: PagesFunction = async (context) => {
     const html = await response.text();
     
     // Parse HTML to extract sound URLs
-    // Looking for: <a href="/assets/audio/category/name.wav" class="fancy download">
     const soundRegex = /href="(\/assets\/audio\/[^"]+\.wav)"/g;
     const sounds: Sound[] = [];
     const seen = new Set<string>();
@@ -47,6 +41,27 @@ export const onRequestGet: PagesFunction = async (context) => {
           url: `/api/audio/${encodeURIComponent(filename)}.wav`,
         });
       }
+    }
+    
+    // Merge custom sounds from same-origin static list (built from soundscustom/*.wav)
+    const customListUrl = new URL('/custom-sounds.json', context.request.url).href;
+    try {
+      const customRes = await fetch(customListUrl);
+      if (customRes.ok) {
+        const customNames: string[] = await customRes.json();
+        for (const name of customNames) {
+          if (typeof name === 'string' && name && !seen.has(name)) {
+            seen.add(name);
+            sounds.push({
+              name,
+              category: name.split('_')[0] || 'other',
+              url: `/api/audio/${encodeURIComponent(name)}.wav`,
+            });
+          }
+        }
+      }
+    } catch {
+      // No custom list or invalid JSON; continue with scraped list only
     }
     
     // Sort by name

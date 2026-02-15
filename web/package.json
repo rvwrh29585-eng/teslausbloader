@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:cf": "wrangler pages dev --proxy 5173 -- npm run dev",
+    "prebuild": "node ../scripts/generate-custom-sounds.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
