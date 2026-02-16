@@ -25,6 +25,7 @@ A web app for browsing, previewing, and downloading custom lock sounds for your 
 - **Worldwide Stats** - Track plays, downloads, favorites
 - **Offline Support** - Cache sounds for offline access
 - **Auto-Updated** - New sounds synced automatically
+- **Custom Sounds** - Add your own WAVs via the `soundscustom/` folder (see [soundscustom/soundscustom.md](./soundscustom/soundscustom.md))
 
 ---
 
@@ -80,9 +81,11 @@ See [ABOUT.md](./ABOUT.md) for complete documentation including:
 ```
 ├── .github/workflows/     # Automated sound sync
 ├── functions/api/         # Cloudflare Workers (API)
-├── scripts/               # Sync scripts
-├── sounds/                # 215+ WAV files
-├── web/                   # React frontend
+├── scripts/               # Sync + generate-custom-sounds.js (build-time list)
+├── sounds/                # WAV files synced from Not a Tesla App
+├── soundscustom/         # Your own WAVs + soundscustom.md (naming guide)
+├── web/                   # React frontend (public: logo, custom-sounds.json)
+├── locksound-logo.jpg     # Logo (also in web/public for favicon and UI)
 ├── script.sh              # Original CLI version (deprecated, see below)
 ├── ABOUT.md               # Complete documentation
 └── README.md              # This file
@@ -119,6 +122,7 @@ Contributions welcome! Feel free to:
 - Report bugs or request features via Issues
 - Submit PRs for improvements
 - Suggest new sounds to add
+- Add your own sounds via the [soundscustom/](./soundscustom/) folder (naming guide in [soundscustom.md](./soundscustom/soundscustom.md))
 
 ---
 

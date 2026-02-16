@@ -71,7 +71,7 @@ Tesla Lock Sound Loader lets you customize your Tesla's lock chime with 200+ sou
 | Hosting | Cloudflare Pages |
 | API | Cloudflare Pages Functions (Workers) |
 | Database | Cloudflare KV (key-value store) |
-| Audio Source | GitHub raw files + notateslaapp.com fallback |
+| Audio Source | GitHub raw (sounds/ + soundscustom/) + notateslaapp.com fallback |
 | CI/CD | GitHub Actions |
 
 ### Project Structure
@@ -83,15 +83,22 @@ teslalocksoundloader/
 │       └── sync-sounds.yml    # Automated sound sync (runs 2x daily)
 ├── functions/
 │   └── api/
-│       ├── sounds.ts          # Scrapes source site for sound list
+│       ├── sounds.ts          # Sound list: scrape notateslaapp + merge custom-sounds.json
 │       ├── stats.ts           # Play/download/favorite tracking
 │       └── audio/
-│           └── [file].ts      # Proxies audio files (GitHub → fallback)
+│           └── [file].ts      # Serves audio (GitHub sounds/ → soundscustom/ → fallback)
 ├── scripts/
-│   └── sync-sounds.js         # Node script to download new sounds
+│   ├── sync-sounds.js         # Node script to download new sounds from source
+│   └── generate-custom-sounds.js  # Build: list soundscustom/*.wav → web/public/custom-sounds.json
 ├── sounds/
-│   └── *.wav                  # 200+ WAV files stored in repo
+│   └── *.wav                  # WAV files synced from Not a Tesla App
+├── soundscustom/
+│   ├── soundscustom.md       # Naming convention for custom WAVs
+│   └── *.wav                 # Your own lock sounds (no manifest needed)
 ├── web/
+│   ├── public/
+│   │   ├── custom-sounds.json # Generated at build from soundscustom/
+│   │   └── locksound-logo.jpg # Favicon, og:image, hero/header logo
 │   ├── src/
 │   │   ├── App.tsx            # Main app component
 │   │   ├── components/
@@ -119,6 +126,17 @@ teslalocksoundloader/
 │   └── tailwind.config.js
 └── README.md
 ```
+
+### Custom sounds (soundscustom/)
+
+You can add your own lock sounds without touching the Not a Tesla App source:
+
+1. Put `.wav` files in **`soundscustom/`** with the naming convention `{category}_{name}.wav` (see [soundscustom/soundscustom.md](soundscustom/soundscustom.md)).
+2. On each build, `prebuild` runs `scripts/generate-custom-sounds.js`, which lists `soundscustom/*.wav` and writes **`web/public/custom-sounds.json`**.
+3. The **`/api/sounds`** handler fetches that JSON from the deployed site and merges those names into the scraped list.
+4. **`/api/audio/[file]`** serves custom files from GitHub raw `soundscustom/` after trying `sounds/`.
+
+No manifest to edit—add a file and push; after deploy, the new sound appears in the app.
 
 ### Local Development
 
