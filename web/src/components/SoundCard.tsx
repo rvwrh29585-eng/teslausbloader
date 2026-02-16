@@ -98,6 +98,7 @@ export function SoundCard({
             onClick={handleShareClick}
             className="p-1.5 rounded-full text-neutral-400 hover:text-blue-400 transition-all duration-200 hover:scale-110 active:scale-95"
             title="Share this sound"
+            aria-label="Share this sound"
           >
             <ShareIcon className="w-4 h-4" />
           </button>
@@ -113,6 +114,8 @@ export function SoundCard({
               ${heartAnimating ? 'animate-heart-pop' : ''}
               hover:scale-110 active:scale-95
             `}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <HeartIcon className="w-4 h-4" filled={isFavorite} />
           </button>
@@ -128,6 +131,7 @@ export function SoundCard({
               }
             `}
             title="Select this sound"
+            aria-label="Select this sound"
           >
             <CheckIcon className="w-4 h-4" />
           </button>
@@ -166,6 +170,7 @@ export function SoundCard({
             onClick={handleShareClick}
             className="p-1 rounded-full text-neutral-400 hover:text-blue-400 transition-all duration-200 hover:scale-110 active:scale-95"
             title="Share"
+            aria-label="Share this sound"
           >
             <ShareIcon className="w-3.5 h-3.5" />
           </button>
@@ -180,6 +185,8 @@ export function SoundCard({
               ${heartAnimating ? 'animate-heart-pop' : ''}
               hover:scale-110 active:scale-95
             `}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <HeartIcon className="w-4 h-4" filled={isFavorite} />
           </button>
@@ -229,6 +236,7 @@ export function SoundCard({
             }
           `}
           title="Select this sound"
+          aria-label="Select this sound"
         >
           <CheckIcon className="w-3.5 h-3.5" />
         </button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ProcessedSound } from '../hooks/useSounds';
 
 interface DownloadPanelProps {
@@ -9,6 +9,15 @@ interface DownloadPanelProps {
 
 export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: DownloadPanelProps) {
   const [showInstructions, setShowInstructions] = useState(false);
+
+  useEffect(() => {
+    if (!showInstructions) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowInstructions(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showInstructions]);
 
   const handleDownload = async () => {
     if (!selectedSound) return;
@@ -83,6 +92,7 @@ export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: D
               onClick={onClearSelection}
               className="p-2 text-neutral-500 hover:text-white transition-colors"
               title="Clear selection"
+              aria-label="Clear selection"
             >
               <XIcon className="w-5 h-5" />
             </button>
@@ -90,6 +100,7 @@ export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: D
               <button
                 onClick={handleDownload}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500 transition-colors"
+                aria-label="Download selected sound as LockChime.wav"
               >
                 <DownloadIcon className="w-5 h-5" />
                 Download as LockChime.wav
@@ -145,6 +156,7 @@ export function DownloadPanel({ selectedSound, onClearSelection, onDownload }: D
             <button
               onClick={() => setShowInstructions(false)}
               className="w-full mt-6 py-3 rounded-xl bg-neutral-800 text-white font-medium hover:bg-neutral-700 transition-colors"
+              aria-label="Close instructions"
             >
               Got it!
             </button>

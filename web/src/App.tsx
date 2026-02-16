@@ -86,6 +86,7 @@ function App() {
     try {
       if (navigator.share && navigator.canShare?.(shareData)) {
         await navigator.share(shareData);
+        showToast('Shared!');
       } else {
         await navigator.clipboard.writeText(shareUrl);
         showToast('Link copied to clipboard!');
@@ -134,14 +135,18 @@ function App() {
 
   return (
     <div className="min-h-screen pb-4">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-red-600 focus:text-white focus:outline-none"
+      >
+        Skip to main content
+      </a>
       {/* Header */}
       <header className="sticky top-0 bg-neutral-950/95 backdrop-blur-lg border-b border-neutral-800 z-30">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center">
-                <BoltIcon className="w-6 h-6 text-white" />
-              </div>
+              <img src="/locksound-logo.jpg" alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" aria-hidden />
               <div>
                 <h1 className="text-xl font-bold text-white">Tesla Lock Sounds</h1>
                 <p className="text-sm text-neutral-500">
@@ -185,7 +190,7 @@ function App() {
       </header>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main id="main" className="max-w-7xl mx-auto px-4 py-6">
         {/* Hero section */}
         <Hero />
         
@@ -306,14 +311,6 @@ function ErrorIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-    </svg>
-  );
-}
-
-function BoltIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-      <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" />
     </svg>
   );
 }

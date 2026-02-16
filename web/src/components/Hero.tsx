@@ -13,7 +13,7 @@ export function Hero() {
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-3xl font-bold text-white mb-3 flex items-center gap-3">
-                <span className="text-3xl">⚡</span>
+                <img src="/locksound-logo.jpg" alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" aria-hidden />
                 Tesla Lock Sound Loader
               </h1>
               <p className="text-neutral-400 mb-3 leading-relaxed">
@@ -54,6 +54,7 @@ export function Hero() {
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors"
                 title="View on GitHub"
+                aria-label="View project on GitHub"
               >
                 <GitHubIcon className="w-5 h-5" />
               </a>
