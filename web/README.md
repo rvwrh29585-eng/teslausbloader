@@ -1,6 +1,6 @@
-# Tesla Lock Sound Loader
+# Tesla USB Loader
 
-A web app to browse, preview, and download custom lock sounds for your Tesla.
+A web app to browse, preview, and download custom USB files for your Tesla — lock chimes, ASS completion sounds, and more.
 
 ## Features
 
@@ -8,7 +8,7 @@ A web app to browse, preview, and download custom lock sounds for your Tesla.
 - **Rando-Browse**: Discover new sounds with random playback
 - **Preview**: Listen before you download
 - **Offline Caching**: Optionally cache all sounds locally
-- **Easy Download**: Save as `LockChime.wav` ready for your Tesla
+- **Easy Download**: Save as `LockChime.wav` and/or `ASSChime.wav` ready for your Tesla
 
 ## Tech Stack
 
@@ -44,9 +44,10 @@ npm run deploy
    - Build output directory: `dist`
 4. Workers in `/functions` auto-deploy
 
-## How to Use the Sound on Your Tesla
+## How to Use Sounds on Your Tesla
 
-1. Select a sound and download as `LockChime.wav`
+1. Select a sound and download as `LockChime.wav` and/or `ASSChime.wav`
 2. Copy to the root of your USB drive (named `TESLADRIVE`)
 3. Plug USB into Tesla glovebox USB port
-4. Go to **Toybox → Boombox → Lock Sound → USB**
+4. **Lock:** Toybox → Boombox → Lock Sound → USB
+5. **ASS:** Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB

@@ -78,8 +78,8 @@ function App() {
   const handleShareSound = useCallback(async (sound: ProcessedSound) => {
     const shareUrl = `${window.location.origin}?sound=${encodeURIComponent(sound.id)}`;
     const shareData = {
-      title: `${sound.displayName} - Tesla Lock Sound`,
-      text: `Check out this Tesla lock sound: ${sound.displayName}`,
+      title: `${sound.displayName} - Tesla USB Loader`,
+      text: `Check out this sound on Tesla USB Loader: ${sound.displayName}`,
       url: shareUrl,
     };
 
@@ -148,7 +148,7 @@ function App() {
             <div className="flex items-center gap-3">
               <img src="/locksound-logo.jpg" alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" aria-hidden />
               <div>
-                <h1 className="text-xl font-bold text-white">Tesla Lock Sounds</h1>
+                <h1 className="text-xl font-bold text-white">Tesla USB Loader</h1>
                 <p className="text-sm text-neutral-500">
                   {activeChannel 
                     ? `${channelFilteredSounds.length} of ${sounds.length} sounds`
@@ -279,7 +279,7 @@ function App() {
               rel="noopener noreferrer"
               className="hover:text-red-400 transition-colors"
             >
-              Sounds by Not a Tesla App
+              Sounds catalog from Not a Tesla App
             </a>
           </div>
           <div className="flex items-center gap-4">

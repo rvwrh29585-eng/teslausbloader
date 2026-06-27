@@ -1,16 +1,16 @@
-# Tesla Lock Sound Loader
+# Tesla USB Loader
 
 [![Cloudflare Pages](https://img.shields.io/badge/Deployed%20on-Cloudflare%20Pages-F38020?logo=cloudflare)](https://teslausbloader.pages.dev)
 [![Sounds](https://img.shields.io/badge/Sounds-215+-blue)](#)
 [![License](https://img.shields.io/badge/License-MIT-green)](#license)
 
-A web app for browsing, previewing, and downloading custom lock and summon sounds for your Tesla. Choose from 200+ sounds including movies, video games, cartoons, and more.
+A web app for browsing, previewing, and downloading custom USB files for your Tesla — lock chimes, ASS completion sounds, and more. Choose from 200+ sounds including movies, video games, cartoons, and community additions.
 
-> **Sound Source:** All sounds courtesy of [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/) - this is an unofficial browser for their excellent curated collection.
+> **Sound catalog:** 200+ sounds from [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/) plus community additions in [`soundscustom/`](./soundscustom/) — unofficial browser for their curated library.
 
 **Live Site:** [teslausbloader.pages.dev](https://teslausbloader.pages.dev)
 
-![Tesla Lock Sound Loader Screenshot](./screenshot01.jpg)
+![Tesla USB Loader screenshot](./screenshot01.jpg)
 
 ---
 
@@ -133,9 +133,9 @@ Contributions welcome! Feel free to:
 
 ## Sound Source & Credits
 
-> **All sounds are sourced from [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/).**
+> **200+ sounds from [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/)**, plus community additions in [`soundscustom/`](./soundscustom/).
 > 
-> This project is an unofficial browser/loader for their excellent curated collection of Tesla lock sounds. All credit for collecting, optimizing, and maintaining the sound library goes to the [Not a Tesla App](https://www.notateslaapp.com) team.
+> This project is an unofficial browser/loader for their excellent curated collection. All credit for collecting, optimizing, and maintaining the main sound library goes to the [Not a Tesla App](https://www.notateslaapp.com) team.
 
 ### Additional Credits
 

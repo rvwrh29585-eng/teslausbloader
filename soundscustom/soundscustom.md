@@ -1,4 +1,4 @@
-# Custom lock sounds
+# Custom sounds
 
 Add your own `.wav` files here. They will appear on the site after you push and the site redeploys.
 

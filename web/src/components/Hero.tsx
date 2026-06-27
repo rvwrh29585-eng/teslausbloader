@@ -14,16 +14,19 @@ export function Hero() {
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-3xl font-bold text-white mb-3 flex items-center gap-3">
                 <img src="/locksound-logo.jpg" alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" aria-hidden />
-                Tesla Lock Sound Loader
+                Tesla USB Loader
               </h1>
               <p className="text-neutral-400 mb-3 leading-relaxed">
-                Customize your Tesla&apos;s lock chime and Actually Smart Summon completion sound
-                with 200+ sounds from movies, video games, TV shows, and more. Preview, pick your
-                favorite, and download ready for your Tesla USB drive.
+                Browse, preview, and download custom USB files for your Tesla — lock chimes,
+                ASS completion sounds, and more. Pick your favorites and save them ready for
+                your Tesla USB drive.
+              </p>
+              <p className="text-sm text-neutral-500 mb-2">
+                More USB file types (light shows, wraps, etc.) may be added here over time.
               </p>
               
               <p className="text-sm text-neutral-500 mb-4 flex items-center gap-2 flex-wrap">
-                <span>All sounds courtesy of</span>
+                <span>200+ sounds from</span>
                 <a 
                   href="https://www.notateslaapp.com/tesla-custom-lock-sounds/" 
                   target="_blank" 
@@ -34,7 +37,7 @@ export function Hero() {
                   <ExternalLinkIcon className="w-3 h-3" />
                 </a>
                 <span className="text-neutral-600">•</span>
-                <span>This app is an unofficial browser for their excellent collection</span>
+                <span>plus community additions — unofficial browser for their curated library</span>
               </p>
               
               <button
