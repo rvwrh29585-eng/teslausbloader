@@ -27,6 +27,18 @@ Tesla USB Loader lets you browse, preview, and download custom USB files for you
 3. **Favorite** - Heart sounds you like to save them
 4. **Download** - Get the file as `LockChime.wav` and/or `ASSChime.wav`
 
+**Custom wraps**
+
+1. Open the **Wraps** tab and filter by your vehicle model
+2. Download a PNG wrap design
+3. Format USB as exFAT or FAT32
+4. Create a **`Wraps/`** folder (capital W) at the root of the drive
+5. Copy the PNG into `Wraps/`
+6. Plug into the centre console USB port
+7. Apply in the car: **Toybox → Paint Shop → Wraps**
+
+See [wraps/wraps.md](./wraps/wraps.md) for file requirements and model folder names.
+
 ### Setting Up Your Tesla
 
 **Lock chime (`LockChime.wav`)**
@@ -64,6 +76,7 @@ Tesla USB Loader lets you browse, preview, and download custom USB files for you
 - **Grid/List view** - Switch layouts for browsing
 - **Offline caching** - Cache sounds for offline access
 - **Worldwide/Personal stats** - See global or your own stats
+- **Custom Wraps** - Browse PNG vehicle wraps by model; download for Paint Shop (USB `Wraps/` folder)
 
 ---
 
@@ -93,19 +106,26 @@ teslalocksoundloader/
 │   └── api/
 │       ├── sounds.ts          # Sound list: scrape notateslaapp + merge custom-sounds.json
 │       ├── stats.ts           # Play/download/favorite tracking
+│       ├── wrap/
+│       │   └── [[path]].ts    # Serves wrap images from GitHub wraps/
 │       └── audio/
 │           └── [file].ts      # Serves audio (GitHub sounds/ → soundscustom/ → fallback)
 ├── scripts/
 │   ├── sync-sounds.js         # Node script to download new sounds from source
-│   └── generate-custom-sounds.js  # Build: list soundscustom/*.wav → web/public/custom-sounds.json
+│   ├── generate-custom-sounds.js  # Build: list soundscustom/*.wav → web/public/custom-sounds.json
+│   └── generate-wraps-manifest.js # Build: scan wraps/{model}/*.png → web/public/wraps-manifest.json
 ├── sounds/
 │   └── *.wav                  # WAV files synced from Not a Tesla App
 ├── soundscustom/
 │   ├── soundscustom.md       # Naming convention for custom WAVs
 │   └── *.wav                 # Your own lock sounds (no manifest needed)
+├── wraps/
+│   ├── wraps.md              # Naming convention + USB setup for vehicle wraps
+│   └── {model-id}/*.png      # Wrap images by Tesla model slug
 ├── web/
 │   ├── public/
 │   │   ├── custom-sounds.json # Generated at build from soundscustom/
+│   │   ├── wraps-manifest.json # Generated at build from wraps/
 │   │   └── locksound-logo.jpg # Favicon, og:image, hero/header logo
 │   ├── src/
 │   │   ├── App.tsx            # Main app component
@@ -190,6 +210,7 @@ npm run build
 |----------|--------|-------------|
 | `/api/sounds` | GET | Returns list of all sounds with metadata |
 | `/api/audio/[file].wav` | GET | Proxies audio file (GitHub → fallback) |
+| `/api/wrap/[model]/[file]` | GET | Serves wrap image from GitHub wraps/ |
 | `/api/stats` | GET | Returns global stats + top sounds |
 | `/api/stats` | POST | Records play/download/favorite event |
 

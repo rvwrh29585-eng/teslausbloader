@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSounds } from './hooks/useSounds';
 import type { ProcessedSound } from './hooks/useSounds';
+import { useWraps } from './hooks/useWraps';
 import { useAudio } from './hooks/useAudio';
 import { useFavorites } from './hooks/useFavorites';
 import { useRecentlyPlayed } from './hooks/useRecentlyPlayed';
@@ -15,39 +16,40 @@ import { SoundBrowser } from './components/SoundBrowser';
 import { RandomBrowse } from './components/RandomBrowse';
 import { DownloadPanel } from './components/DownloadPanel';
 import { CacheManager } from './components/CacheManager';
+import { WrapBrowser } from './components/WrapBrowser';
 
-type ViewMode = 'browse' | 'random';
+type AppSection = 'sounds' | 'wraps';
 
 function App() {
-  const { sounds, categories, loading, error } = useSounds();
+  const { sounds, categories, loading: soundsLoading, error: soundsError } = useSounds();
+  const { wraps, loading: wrapsLoading } = useWraps();
   const { currentSound, isPlaying, play, stop } = useAudio();
   const { favorites, toggleFavorite } = useFavorites();
   const { recentlyPlayed, addRecentlyPlayed } = useRecentlyPlayed();
   const { recordPlay, recordDownload, recordFavorite, getPlayCount, getTopSounds, getTopFavorited, globalStats, mode, setMode } = useStats();
   const { showToast } = useToast();
   const [selectedSound, setSelectedSound] = useState<ProcessedSound | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('browse');
+  const [section, setSection] = useState<AppSection>('sounds');
+  const [showRandomBrowse, setShowRandomBrowse] = useState(false);
   const [activeChannel, setActiveChannel] = useState<string | null>(null);
-  
-  // Filter sounds by active channel
-  const channelFilteredSounds = activeChannel 
+
+  const channelFilteredSounds = activeChannel
     ? getChannelSounds(sounds, activeChannel)
     : sounds;
 
-  // Handle shared sound URL parameter (one-time initialization)
   useEffect(() => {
     if (sounds.length === 0) return;
-    
+
     const params = new URLSearchParams(window.location.search);
     const sharedSoundId = params.get('sound');
-    
+
     if (sharedSoundId) {
       const sound = sounds.find(s => s.id === sharedSoundId);
       if (sound) {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL param initialization
         setSelectedSound(sound);
+        setSection('sounds');
         showToast(`Loaded shared sound: ${sound.displayName}`);
-        // Clear the URL parameter without refresh
         window.history.replaceState({}, '', window.location.pathname);
       }
     }
@@ -61,7 +63,8 @@ function App() {
 
   const handleSelectSound = useCallback((sound: ProcessedSound) => {
     setSelectedSound(sound);
-    setViewMode('browse');
+    setSection('sounds');
+    setShowRandomBrowse(false);
   }, []);
 
   const handleClearSelection = useCallback(() => {
@@ -92,7 +95,6 @@ function App() {
         showToast('Link copied to clipboard!');
       }
     } catch (err) {
-      // User cancelled or error - try clipboard fallback
       try {
         await navigator.clipboard.writeText(shareUrl);
         showToast('Link copied to clipboard!');
@@ -102,36 +104,16 @@ function App() {
     }
   }, [showToast]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <div className="text-neutral-400">Loading sounds...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md px-4">
-          <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
-            <ErrorIcon className="w-8 h-8 text-red-500" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Failed to load sounds</h2>
-          <p className="text-neutral-400 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-500"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const subtitle =
+    section === 'wraps'
+      ? wrapsLoading
+        ? 'Loading wraps...'
+        : `${wraps.length} wrap${wraps.length === 1 ? '' : 's'} available`
+      : soundsLoading
+        ? 'Loading sounds...'
+        : activeChannel
+          ? `${channelFilteredSounds.length} of ${sounds.length} sounds`
+          : `${sounds.length} sounds available`;
 
   return (
     <div className="min-h-screen pb-4">
@@ -141,141 +123,172 @@ function App() {
       >
         Skip to main content
       </a>
-      {/* Header */}
+
       <header className="sticky top-0 bg-neutral-950/95 backdrop-blur-lg border-b border-neutral-800 z-30">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
               <img src="/locksound-logo.jpg" alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" aria-hidden />
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-xl font-bold text-white">Tesla USB Loader</h1>
-                <p className="text-sm text-neutral-500">
-                  {activeChannel 
-                    ? `${channelFilteredSounds.length} of ${sounds.length} sounds`
-                    : `${sounds.length} sounds available`
-                  }
-                </p>
+                <p className="text-sm text-neutral-500 truncate">{subtitle}</p>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
+
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
-                onClick={() => setViewMode('browse')}
+                onClick={() => {
+                  setSection('sounds');
+                  setShowRandomBrowse(false);
+                }}
                 className={`
                   px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${viewMode === 'browse'
-                    ? 'bg-neutral-800 text-white'
-                    : 'text-neutral-400 hover:text-white'
+                  ${section === 'sounds'
+                    ? 'bg-red-600 text-white'
+                    : 'text-neutral-400 hover:text-white bg-neutral-800/50'
                   }
                 `}
               >
-                Browse
+                Sounds
               </button>
               <button
-                onClick={() => setViewMode('random')}
+                onClick={() => {
+                  setSection('wraps');
+                  setShowRandomBrowse(false);
+                }}
                 className={`
-                  px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2
-                  ${viewMode === 'random'
+                  px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                  ${section === 'wraps'
                     ? 'bg-red-600 text-white'
-                    : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                    : 'text-neutral-400 hover:text-white bg-neutral-800/50'
                   }
                 `}
               >
-                <ShuffleIcon className="w-4 h-4" />
-                Rando-Browse
+                Wraps
               </button>
+              {section === 'sounds' && (
+                <button
+                  onClick={() => setShowRandomBrowse(true)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
+                >
+                  <ShuffleIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline">Rando-Browse</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
       <main id="main" className="max-w-7xl mx-auto px-4 py-6">
-        {/* Hero section */}
-        <Hero />
-        
-        {/* Stats Mode Toggle */}
-        <StatsToggle
-          mode={mode}
-          onModeChange={setMode}
-          globalStats={globalStats}
-        />
-        
-        {/* Channels */}
-        <Channels
-          sounds={sounds}
-          activeChannel={activeChannel}
-          onSelectChannel={setActiveChannel}
-        />
-        
-        {/* Quick Picks */}
-        <QuickPicks
-          sounds={channelFilteredSounds}
-          currentlyPlaying={currentSound}
-          isPlaying={isPlaying}
-          onPlay={handlePlaySound}
-          onSelect={handleSelectSound}
-        />
-        
-        {/* Most Popular / Most Favorited */}
-        <MostPopular
-          sounds={sounds}
-          topPlayed={getTopSounds(5)}
-          topFavorited={getTopFavorited(5)}
-          currentlyPlaying={currentSound}
-          isPlaying={isPlaying}
-          onPlay={handlePlaySound}
-          onSelect={handleSelectSound}
-        />
-        
-        {/* Sound Browser */}
-        <SoundBrowser
-          sounds={channelFilteredSounds}
-          categories={categories}
-          selectedSound={selectedSound}
-          currentlyPlaying={currentSound}
-          isPlaying={isPlaying}
-          favorites={favorites}
-          recentlyPlayed={recentlyPlayed}
-          getPlayCount={getPlayCount}
-          onPlaySound={handlePlaySound}
-          onSelectSound={handleSelectSound}
-          onToggleFavorite={handleToggleFavorite}
-          onShareSound={handleShareSound}
-        />
+        {section === 'sounds' ? (
+          soundsLoading ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="text-center">
+                <LoadingSpinner className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <div className="text-neutral-400">Loading sounds...</div>
+              </div>
+            </div>
+          ) : soundsError ? (
+            <div className="text-center py-24 max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
+                <ErrorIcon className="w-8 h-8 text-red-500" />
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">Failed to load sounds</h2>
+              <p className="text-neutral-400 mb-4">{soundsError}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-500"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <>
+              <Hero />
+
+              <StatsToggle
+                mode={mode}
+                onModeChange={setMode}
+                globalStats={globalStats}
+              />
+
+              <Channels
+                sounds={sounds}
+                activeChannel={activeChannel}
+                onSelectChannel={setActiveChannel}
+              />
+
+              <QuickPicks
+                sounds={channelFilteredSounds}
+                currentlyPlaying={currentSound}
+                isPlaying={isPlaying}
+                onPlay={handlePlaySound}
+                onSelect={handleSelectSound}
+              />
+
+              <MostPopular
+                sounds={sounds}
+                topPlayed={getTopSounds(5)}
+                topFavorited={getTopFavorited(5)}
+                currentlyPlaying={currentSound}
+                isPlaying={isPlaying}
+                onPlay={handlePlaySound}
+                onSelect={handleSelectSound}
+              />
+
+              <SoundBrowser
+                sounds={channelFilteredSounds}
+                categories={categories}
+                selectedSound={selectedSound}
+                currentlyPlaying={currentSound}
+                isPlaying={isPlaying}
+                favorites={favorites}
+                recentlyPlayed={recentlyPlayed}
+                getPlayCount={getPlayCount}
+                onPlaySound={handlePlaySound}
+                onSelectSound={handleSelectSound}
+                onToggleFavorite={handleToggleFavorite}
+                onShareSound={handleShareSound}
+              />
+            </>
+          )
+        ) : (
+          <WrapBrowser />
+        )}
       </main>
 
-      {/* Random browse modal */}
-      {viewMode === 'random' && (
+      {section === 'sounds' && showRandomBrowse && !soundsLoading && !soundsError && (
         <RandomBrowse
           sounds={sounds}
           onSelect={handleSelectSound}
-          onClose={() => setViewMode('browse')}
+          onClose={() => setShowRandomBrowse(false)}
           playSound={play}
           currentlyPlaying={currentSound}
           isPlaying={isPlaying}
         />
       )}
 
-      {/* Download panel */}
-      <DownloadPanel
-        selectedSound={selectedSound}
-        onClearSelection={handleClearSelection}
-        onDownload={recordDownload}
-      />
+      {section === 'sounds' && (
+        <DownloadPanel
+          selectedSound={selectedSound}
+          onClearSelection={handleClearSelection}
+          onDownload={recordDownload}
+        />
+      )}
 
-      {/* Cache manager */}
-      <CacheManager sounds={sounds} />
+      {section === 'sounds' && !soundsLoading && !soundsError && (
+        <CacheManager sounds={sounds} />
+      )}
 
-      {/* Footer */}
       <footer className="max-w-7xl mx-auto px-4 py-8 mt-8 border-t border-neutral-800">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
           <div className="flex items-center gap-2">
             <span>v1.0.0</span>
             <span className="text-neutral-700">•</span>
-            <a 
-              href="https://www.notateslaapp.com/tesla-custom-lock-sounds/" 
-              target="_blank" 
+            <a
+              href="https://www.notateslaapp.com/tesla-custom-lock-sounds/"
+              target="_blank"
               rel="noopener noreferrer"
               className="hover:text-red-400 transition-colors"
             >
@@ -283,9 +296,9 @@ function App() {
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <a 
-              href="https://github.com/rvwrh29585-eng/teslausbloader" 
-              target="_blank" 
+            <a
+              href="https://github.com/rvwrh29585-eng/teslausbloader"
+              target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >

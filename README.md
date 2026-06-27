@@ -27,6 +27,7 @@ A web app for browsing, previewing, and downloading custom USB files for your Te
 - **Auto-Updated** - New sounds synced automatically
 - **Custom Sounds** - Add your own WAVs via the `soundscustom/` folder (see [soundscustom/soundscustom.md](./soundscustom/soundscustom.md))
 - **ASS Completion Sound** - Download the same library as `ASSChime.wav` for Actually Smart Summon
+- **Custom Wraps** - Browse and download PNG vehicle wraps organized by model (Toybox → Paint Shop → Wraps)
 
 ---
 
@@ -86,10 +87,11 @@ See [ABOUT.md](./ABOUT.md) for complete documentation including:
 ```
 ├── .github/workflows/     # Automated sound sync
 ├── functions/api/         # Cloudflare Workers (API)
-├── scripts/               # Sync + generate-custom-sounds.js (build-time list)
+├── scripts/               # Sync + generate-custom-sounds.js + generate-wraps-manifest.js (build-time lists)
 ├── sounds/                # WAV files synced from Not a Tesla App
 ├── soundscustom/         # Your own WAVs + soundscustom.md (naming guide)
-├── web/                   # React frontend (public: logo, custom-sounds.json)
+├── wraps/                 # PNG vehicle wraps by model + wraps.md (naming guide)
+├── web/                   # React frontend (public: logo, custom-sounds.json, wraps-manifest.json)
 ├── locksound-logo.jpg     # Logo (also in web/public for favicon and UI)
 ├── script.sh              # Original CLI version (deprecated, see below)
 ├── ABOUT.md               # Complete documentation
