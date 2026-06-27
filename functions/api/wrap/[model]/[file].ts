@@ -10,18 +10,14 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 export const onRequestGet: PagesFunction = async (context) => {
-  const pathParam = context.params.path;
+  const { model, file } = context.params;
 
-  if (!pathParam || typeof pathParam !== 'string') {
-    return new Response('Path required', { status: 400 });
+  if (!model || typeof model !== 'string' || !file || typeof file !== 'string') {
+    return new Response('Model and file required', { status: 400 });
   }
 
-  const segments = pathParam.split('/').filter(Boolean);
-  if (segments.length !== 2) {
-    return new Response('Invalid path', { status: 400 });
-  }
-
-  const [modelId, filename] = segments;
+  const modelId = decodeURIComponent(model);
+  const filename = decodeURIComponent(file);
 
   if (
     modelId.includes('..') ||
