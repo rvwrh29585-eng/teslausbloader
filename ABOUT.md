@@ -18,29 +18,37 @@
 
 ### What Is This?
 
-Tesla Lock Sound Loader lets you customize your Tesla's lock chime with 200+ sounds from movies, video games, TV shows, and more. Browse sounds, preview them, pick your favorite, and download it ready for your Tesla.
+Tesla Lock Sound Loader lets you customize your Tesla's lock chime and Actually Smart Summon (ASS) completion sound with 200+ sounds from movies, video games, TV shows, and more. Browse sounds, preview them, pick your favorite, and download ready for your Tesla USB drive.
 
 ### How It Works
 
 1. **Browse** - Search, filter by category, or explore random picks
 2. **Preview** - Click play to hear any sound
 3. **Favorite** - Heart sounds you like to save them
-4. **Download** - Get the file as `LockChime.wav`
+4. **Download** - Get the file as `LockChime.wav` and/or `ASSChime.wav`
 
 ### Setting Up Your Tesla
 
-1. Download your chosen sound (it downloads as `LockChime.wav`)
-2. Insert a USB drive formatted as FAT32 (usually named `TESLADRIVE`)
+**Lock chime (`LockChime.wav`)**
+
+1. Download your chosen sound as `LockChime.wav`
+2. Insert a USB drive formatted as FAT32 or exFAT (usually named `TESLADRIVE`)
 3. Copy `LockChime.wav` to the **root** of the USB drive (not in any folder)
-4. Safely eject the USB drive
-5. Plug it into your Tesla's glovebox USB port
-6. Go to **Toybox → Boombox → Lock Sound → USB**
+4. Safely eject and plug into your Tesla's glovebox USB port
+5. Go to **Toybox → Boombox → Lock Sound → USB**
+
+**ASS completion sound (`ASSChime.wav`)**
+
+1. Select a sound and download as `ASSChime.wav` (same library; can use a different clip than lock)
+2. Copy `ASSChime.wav` to the **root** of the same USB drive (alongside `LockChime.wav` if you use both)
+3. In the car: **Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB**
 
 ### Requirements
 
 - Tesla with Pedestrian Warning System (PWS) speaker (2019+ models)
-- USB drive formatted as FAT32
-- Sound file must be named exactly `LockChime.wav`
+- USB drive formatted as FAT32 or exFAT
+- WAV format, **under 1 MB** per file
+- Exact filenames: `LockChime.wav` and/or `ASSChime.wav` at the USB root
 
 ### Features
 

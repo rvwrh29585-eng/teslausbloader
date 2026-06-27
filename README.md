@@ -4,7 +4,7 @@
 [![Sounds](https://img.shields.io/badge/Sounds-215+-blue)](#)
 [![License](https://img.shields.io/badge/License-MIT-green)](#license)
 
-A web app for browsing, previewing, and downloading custom lock sounds for your Tesla. Choose from 200+ sounds including movies, video games, cartoons, and more.
+A web app for browsing, previewing, and downloading custom lock and summon sounds for your Tesla. Choose from 200+ sounds including movies, video games, cartoons, and more.
 
 > **Sound Source:** All sounds courtesy of [Not a Tesla App](https://www.notateslaapp.com/tesla-custom-lock-sounds/) - this is an unofficial browser for their excellent curated collection.
 
@@ -26,6 +26,7 @@ A web app for browsing, previewing, and downloading custom lock sounds for your 
 - **Offline Support** - Cache sounds for offline access
 - **Auto-Updated** - New sounds synced automatically
 - **Custom Sounds** - Add your own WAVs via the `soundscustom/` folder (see [soundscustom/soundscustom.md](./soundscustom/soundscustom.md))
+- **ASS Completion Sound** - Download the same library as `ASSChime.wav` for Actually Smart Summon
 
 ---
 
@@ -33,12 +34,16 @@ A web app for browsing, previewing, and downloading custom lock sounds for your 
 
 1. **Browse** the sounds at [teslausbloader.pages.dev](https://teslausbloader.pages.dev)
 2. **Preview** sounds by clicking the play button
-3. **Download** your favorite as `LockChime.wav`
-4. **Copy** the file to the root of your USB drive
+3. **Select** a sound (checkmark), then **download** as:
+   - `LockChime.wav` — custom lock chime
+   - `ASSChime.wav` — Actually Smart Summon completion sound
+4. **Copy** the file(s) to the **root** of your USB drive (both can live on the same drive)
 5. **Plug** the USB into your Tesla's glovebox port
-6. **Activate** via Toybox → Boombox → Lock Sound → USB
+6. **Activate** in the car:
+   - **Lock:** Toybox → Boombox → Lock Sound → USB
+   - **ASS:** Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB
 
-> **Requirements:** Tesla with Pedestrian Warning System (2019+ models), FAT32 USB drive
+> **Requirements:** Tesla with Pedestrian Warning System (2019+ models), FAT32 or exFAT USB drive. Each WAV must be under 1 MB and named exactly `LockChime.wav` or `ASSChime.wav`.
 
 ---
 

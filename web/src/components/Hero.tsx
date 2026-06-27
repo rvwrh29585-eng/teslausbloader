@@ -17,9 +17,9 @@ export function Hero() {
                 Tesla Lock Sound Loader
               </h1>
               <p className="text-neutral-400 mb-3 leading-relaxed">
-                Customize your Tesla's lock chime with 200+ sounds from movies, video games, 
-                TV shows, and more. Preview, pick your favorite, and download it ready 
-                for your Tesla.
+                Customize your Tesla&apos;s lock chime and Actually Smart Summon completion sound
+                with 200+ sounds from movies, video games, TV shows, and more. Preview, pick your
+                favorite, and download ready for your Tesla USB drive.
               </p>
               
               <p className="text-sm text-neutral-500 mb-4 flex items-center gap-2 flex-wrap">
@@ -74,23 +74,33 @@ export function Hero() {
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-bold">2</span>
-                  <span>Click the checkmark to select it, then download as <code className="px-1.5 py-0.5 rounded bg-neutral-700 text-white">LockChime.wav</code></span>
+                  <span>
+                    Click the checkmark to select, then download as{' '}
+                    <code className="px-1.5 py-0.5 rounded bg-neutral-700 text-white">LockChime.wav</code>{' '}
+                    (lock sound) or{' '}
+                    <code className="px-1.5 py-0.5 rounded bg-neutral-700 text-white">ASSChime.wav</code>{' '}
+                    (summon completion)
+                  </span>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-bold">3</span>
-                  <span>Copy the file to the <strong className="text-white">root</strong> of your USB drive (named TESLADRIVE)</span>
+                  <span>Copy the file(s) to the <strong className="text-white">root</strong> of your USB drive (named TESLADRIVE). Both chimes can live on the same drive.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-bold">4</span>
-                  <span>Plug USB into your Tesla's glovebox port</span>
+                  <span>Plug USB into your Tesla&apos;s glovebox port</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-red-600/20 text-red-400 flex items-center justify-center text-xs font-bold">5</span>
-                  <span>Go to <strong className="text-white">Toybox → Boombox → Lock Sound → USB</strong></span>
+                  <span>
+                    <strong className="text-white">Lock:</strong> Toybox → Boombox → Lock Sound → USB
+                    <br />
+                    <strong className="text-white">ASS:</strong> Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB
+                  </span>
                 </li>
               </ol>
               <p className="mt-4 text-xs text-neutral-500">
-                Requires Tesla with Pedestrian Warning System speaker (2019+ models)
+                WAV format, under 1 MB per file. Requires Tesla with Pedestrian Warning System (2019+ models).
               </p>
             </div>
           )}
