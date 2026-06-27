@@ -107,7 +107,7 @@ teslalocksoundloader/
 │       ├── sounds.ts          # Sound list: scrape notateslaapp + merge custom-sounds.json
 │       ├── stats.ts           # Play/download/favorite tracking
 │       ├── wrap/
-│       │   └── [[path]].ts    # Serves wrap images from GitHub wraps/
+│       │   └── [model]/[file].ts  # Serves wrap images from GitHub wraps/
 │       └── audio/
 │           └── [file].ts      # Serves audio (GitHub sounds/ → soundscustom/ → fallback)
 ├── scripts/
