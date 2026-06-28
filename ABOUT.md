@@ -37,7 +37,11 @@ Tesla USB Loader lets you browse, preview, and download custom USB files for you
 6. Plug into the centre console USB port
 7. Apply in the car: **Toybox → Paint Shop → Wraps**
 
-See [wraps/wraps.md](./wraps/wraps.md) for file requirements and model folder names.
+See [wraps/wraps.md](./wraps/wraps.md) for file requirements and model folder names. To design your own graphics, try [Jowua Wrap Studio](https://www.jowua-life.com/pages/jowua-wrap-studio).
+
+**Mobile:** The site works on iPhone and other phones — browse, preview, and download files, then copy them to your Tesla USB stick (USB-C / USB-A dual sticks work well).
+
+See [notes.md](./notes.md) for maintainer notes and verified end-to-end workflows.
 
 ### Setting Up Your Tesla
 

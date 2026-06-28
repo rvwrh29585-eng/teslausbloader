@@ -1,53 +1,37 @@
-# Tesla USB Loader
+# Tesla USB Loader (frontend)
 
-A web app to browse, preview, and download custom USB files for your Tesla — lock chimes, ASS completion sounds, and more.
+React + Vite frontend for [teslausbloader.pages.dev](https://teslausbloader.pages.dev).
 
 ## Features
 
-- **Browse & Search**: Filter 200+ sounds by name or category
-- **Rando-Browse**: Discover new sounds with random playback
-- **Preview**: Listen before you download
-- **Offline Caching**: Optionally cache all sounds locally
-- **Easy Download**: Save as `LockChime.wav` and/or `ASSChime.wav` ready for your Tesla
+- **Sounds** — Browse 200+ lock/ASS chimes; preview, favorites, download as `LockChime.wav` / `ASSChime.wav`
+- **Wraps** — Browse PNG vehicle wraps by model; download for Paint Shop (`Wraps/` on USB)
+- **Mobile-friendly** — Works on iPhone and other phones for browse + download
 
 ## Tech Stack
 
 - React + TypeScript + Vite
 - Tailwind CSS
-- Cloudflare Pages + Workers
+- Cloudflare Pages + Functions (`../functions/`)
 
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
-npm run dev
-
-# Run with Cloudflare Workers (for API testing)
-npm run dev:cf
-
-# Build for production
-npm run build
-
-# Deploy to Cloudflare Pages
-npm run deploy
+npm run dev          # UI only — /api/* won't work
+npm run dev:cf       # UI + Cloudflare Functions locally
+npm run build        # prebuild regenerates sound/wrap manifests
+npm run deploy       # manual deploy (normally push to main instead)
 ```
+
+**Note:** We usually test against production after pushing to `main`. Plain `npm run dev` does not serve API routes.
 
 ## Deployment
 
-1. Push to GitHub
-2. Connect repo to Cloudflare Pages
-3. Build settings:
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-4. Workers in `/functions` auto-deploy
+Push to `main` on GitHub → Cloudflare Pages auto-builds.
 
-## How to Use Sounds on Your Tesla
+- Build command: `cd web && npm install && npm run build`
+- Output: `web/dist`
+- Functions: repo root `functions/`
 
-1. Select a sound and download as `LockChime.wav` and/or `ASSChime.wav`
-2. Copy to the root of your USB drive (named `TESLADRIVE`)
-3. Plug USB into Tesla glovebox USB port
-4. **Lock:** Toybox → Boombox → Lock Sound → USB
-5. **ASS:** Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB
+See [../notes.md](../notes.md) for publishing sounds/wraps and verified USB workflows.

@@ -41,7 +41,7 @@ Up to 10 wrap images at a time. Do not put map or firmware update files on the s
 
 ## Adding a new wrap
 
-1. Download the template for your model from [teslamotors/custom-wraps](https://github.com/teslamotors/custom-wraps)
+1. Download the template for your model from [teslamotors/custom-wraps](https://github.com/teslamotors/custom-wraps), or design in [Jowua Wrap Studio](https://www.jowua-life.com/pages/jowua-wrap-studio)
 2. Edit and export as PNG meeting the requirements above
 3. Save under `wraps/{model-id}/YourWrapName.png`
 4. Push — the build picks it up automatically

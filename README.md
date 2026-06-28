@@ -44,7 +44,18 @@ A web app for browsing, previewing, and downloading custom USB files for your Te
    - **Lock:** Toybox → Boombox → Lock Sound → USB
    - **ASS:** Controls → Autopilot → ASS → Customize Summon → Completion Sound → USB
 
-> **Requirements:** Tesla with Pedestrian Warning System (2019+ models), FAT32 or exFAT USB drive. Each WAV must be under 1 MB and named exactly `LockChime.wav` or `ASSChime.wav`.
+### Wraps
+
+1. Open the **Wraps** tab and filter by your model
+2. Download PNG wrap(s) to your phone or computer
+3. Create a **`Wraps/`** folder (capital W) at the USB root and copy PNGs there
+4. Plug into the centre console USB port → **Toybox → Paint Shop → Wraps**
+
+Works on mobile (e.g. iPhone) — browse and download from the site, then copy to your Tesla USB stick.
+
+> **Requirements:** Tesla with Pedestrian Warning System (2019+ models), FAT32 or exFAT USB drive. Each WAV must be under 1 MB and named exactly `LockChime.wav` or `ASSChime.wav`. Wraps must be PNG, under 1 MB.
+
+See [notes.md](./notes.md) for maintainer notes and verified workflows.
 
 ---
 
@@ -95,6 +106,7 @@ See [ABOUT.md](./ABOUT.md) for complete documentation including:
 ├── locksound-logo.jpg     # Logo (also in web/public for favicon and UI)
 ├── script.sh              # Original CLI version (deprecated, see below)
 ├── ABOUT.md               # Complete documentation
+├── notes.md               # Maintainer notes, verified workflows, publishing checklist
 └── README.md              # This file
 ```
 
@@ -130,6 +142,7 @@ Contributions welcome! Feel free to:
 - Submit PRs for improvements
 - Suggest new sounds to add
 - Add your own sounds via the [soundscustom/](./soundscustom/) folder (naming guide in [soundscustom.md](./soundscustom/soundscustom.md))
+- Add your own wraps via the [wraps/](./wraps/) folder (naming guide in [wraps/wraps.md](./wraps/wraps.md))
 
 ---
 
