@@ -11,7 +11,7 @@ wraps/
   modely/                 # Model Y (pre-2025)
   modely-2025-base/       # Model Y (2025+) Standard
   modely-2025-premium/    # Model Y (2025+) Premium
-  model3/                 # Model 3
+  model3/                 # Model 3 (pre-2024)
   cybertruck/             # Cybertruck
   ...
 ```

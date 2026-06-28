@@ -4,7 +4,7 @@ export const WRAP_MODEL_LABELS: Record<string, string> = {
   modely: 'Model Y (pre-2025)',
   'modely-2025-base': 'Model Y (2025+) Standard',
   'modely-2025-premium': 'Model Y (2025+) Premium',
-  model3: 'Model 3',
+  model3: 'Model 3 (pre-2024)',
   'model3-2024-base': 'Model 3 (2024+) Standard',
   'model3-2024-premium': 'Model 3 (2024+) Premium',
   cybertruck: 'Cybertruck',
