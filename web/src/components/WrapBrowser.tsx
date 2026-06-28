@@ -47,6 +47,18 @@ export function WrapBrowser() {
             Get blank templates from Tesla
           </a>
         </p>
+        <p className="text-neutral-400 text-sm max-w-2xl mt-2">
+          Want to make your own?{' '}
+          <a
+            href="https://www.jowua-life.com/pages/jowua-wrap-studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-red-400 hover:text-red-300 transition-colors"
+          >
+            Jowua Wrap Studio
+          </a>{' '}
+          is an easy place to design custom wrap graphics.
+        </p>
       </div>
 
       <SearchBar
