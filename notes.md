@@ -4,7 +4,7 @@ Informal maintainer log for [Tesla USB Loader](https://teslausbloader.pages.dev)
 
 ---
 
-## Status (Jun 2026)
+## Status (Late June 2026)
 
 **Production site is working end-to-end.** Verified on iPhone at [teslausbloader.pages.dev](https://teslausbloader.pages.dev):
 
@@ -12,7 +12,14 @@ Informal maintainer log for [Tesla USB Loader](https://teslausbloader.pages.dev)
 - **Wraps** — browse by model, preview, download PNGs
 - **USB load** — downloaded files copied to a Tesla USB stick and used in-car successfully
 
+The site continues to work great after recent updates.
+
 Dual-end USB stick (USB-C + USB-A) works fine for loading files from a phone or computer.
+
+### Recent changes (June 2026)
+- Centralized all icon components (Play, Pause, Heart, Loading, etc.) into `web/src/lib/icons.tsx`. This removed ~440 lines of duplicated inline SVGs from across the React components.
+- Updated `.gitignore` for explicit build artifact exclusion (`web/dist/`).
+- Local workspace tidied (removed generated `web/dist/` and legacy ignored directories).
 
 ---
 
@@ -77,6 +84,7 @@ We test in **production**, not local dev — Vite alone does not serve `/api/*`.
 - **Wrap API routing:** Cloudflare `[[path]]` catch-all passes `params.path` as a **string array**, not a string. Use `functions/api/wrap/[model]/[file].ts` instead.
 - **Cache:** `/api/sounds` uses `no-store` so new custom sounds show up without hard refresh.
 - **PNG for wraps:** Store PNG in repo even though the API accepts JPG — keeps UI clean and matches Tesla requirements.
+- **Shared icon library:** Centralizing repeated inline SVGs (and other icons) into a single `lib/icons.tsx` dramatically reduces duplication and makes the component code easier to maintain.
 
 ---
 
