@@ -18,9 +18,12 @@ function generate() {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  const sounds = listSoundsWithAddedAt(REPO_ROOT, 'sounds');
+  const sounds = listSoundsWithAddedAt(REPO_ROOT, 'sounds', OUTPUT_PATH);
+  const uniqueDates = new Set(sounds.map((s) => s.addedAt)).size;
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify({ sounds }, null, 0) + '\n', 'utf8');
-  console.log(`Wrote ${sounds.length} synced sound(s) to web/public/sounds-manifest.json`);
+  console.log(
+    `Wrote ${sounds.length} synced sound(s) (${uniqueDates} unique addedAt dates) to web/public/sounds-manifest.json`
+  );
 }
 
 generate();
