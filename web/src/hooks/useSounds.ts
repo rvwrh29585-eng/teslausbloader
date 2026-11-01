@@ -23,6 +23,7 @@ export function useSounds() {
           category: parseCategory(sound.name),
           displayName: formatDisplayName(sound.name),
           url: getAudioUrl(`${sound.name}.wav`),
+          addedAt: sound.addedAt,
         }));
         
         setSounds(processed);

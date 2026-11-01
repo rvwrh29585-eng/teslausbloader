@@ -5,6 +5,8 @@ export interface Sound {
   category: string;
   url: string;
   displayName: string;
+  /** ISO date when the file was first added to the repo (if known) */
+  addedAt?: string;
 }
 
 const API_BASE = '/api';

@@ -6,24 +6,70 @@ interface Sound {
   name: string;
   category: string;
   url: string;
+  addedAt?: string;
 }
 
-function addSound(sounds: Sound[], seen: Set<string>, name: string) {
-  if (!name || seen.has(name)) return;
+interface ManifestEntry {
+  name: string;
+  addedAt?: string;
+}
+
+function addSound(
+  sounds: Sound[],
+  seen: Set<string>,
+  name: string,
+  addedAt?: string
+) {
+  if (!name) return;
+  if (seen.has(name)) {
+    // Fill in date if a later source has it and current entry doesn't
+    if (addedAt) {
+      const existing = sounds.find((s) => s.name === name);
+      if (existing && !existing.addedAt) existing.addedAt = addedAt;
+    }
+    return;
+  }
   seen.add(name);
   sounds.push({
     name,
     category: name.split('_')[0] || 'other',
     url: `/api/audio/${encodeURIComponent(name)}.wav`,
+    ...(addedAt ? { addedAt } : {}),
   });
 }
 
-async function loadNameList(url: string): Promise<string[]> {
+async function loadManifestEntries(url: string): Promise<ManifestEntry[]> {
   try {
     const res = await fetch(url);
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data) ? data.filter((n): n is string => typeof n === 'string' && !!n) : [];
+
+    // New shape: { sounds: [{ name, addedAt }] }
+    if (data && Array.isArray(data.sounds)) {
+      return data.sounds
+        .map((entry: unknown) => {
+          if (typeof entry === 'string') return { name: entry };
+          if (entry && typeof entry === 'object' && 'name' in entry) {
+            const e = entry as { name: unknown; addedAt?: unknown };
+            if (typeof e.name !== 'string' || !e.name) return null;
+            return {
+              name: e.name,
+              addedAt: typeof e.addedAt === 'string' ? e.addedAt : undefined,
+            };
+          }
+          return null;
+        })
+        .filter((e: ManifestEntry | null): e is ManifestEntry => e !== null);
+    }
+
+    // Legacy shape: ["name", ...]
+    if (Array.isArray(data)) {
+      return data
+        .filter((n): n is string => typeof n === 'string' && !!n)
+        .map((name) => ({ name }));
+    }
+
+    return [];
   } catch {
     return [];
   }
@@ -57,15 +103,13 @@ export const onRequestGet: PagesFunction = async (context) => {
     const sounds: Sound[] = [];
     const seen = new Set<string>();
 
-    // Primary: repo manifests (survive source-site HTML redesigns)
-    for (const name of await loadNameList(`${origin}/sounds-manifest.json`)) {
-      addSound(sounds, seen, name);
+    for (const entry of await loadManifestEntries(`${origin}/sounds-manifest.json`)) {
+      addSound(sounds, seen, entry.name, entry.addedAt);
     }
-    for (const name of await loadNameList(`${origin}/custom-sounds.json`)) {
-      addSound(sounds, seen, name);
+    for (const entry of await loadManifestEntries(`${origin}/custom-sounds.json`)) {
+      addSound(sounds, seen, entry.name, entry.addedAt);
     }
 
-    // Optional enrichment: scrape live page for brand-new sounds before next sync
     try {
       const response = await fetch('https://www.notateslaapp.com/tesla-custom-lock-sounds/', {
         headers: {
@@ -82,7 +126,13 @@ export const onRequestGet: PagesFunction = async (context) => {
       // Manifests alone are enough
     }
 
-    sounds.sort((a, b) => a.name.localeCompare(b.name));
+    // Default API order: newest first, then name
+    sounds.sort((a, b) => {
+      const aDate = a.addedAt || '';
+      const bDate = b.addedAt || '';
+      if (aDate !== bDate) return bDate.localeCompare(aDate);
+      return a.name.localeCompare(b.name);
+    });
 
     return new Response(JSON.stringify({ sounds }), {
       headers: {

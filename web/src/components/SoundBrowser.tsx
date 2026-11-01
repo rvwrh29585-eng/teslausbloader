@@ -28,8 +28,10 @@ interface SoundBrowserProps {
 }
 
 type FilterMode = 'all' | 'favorites' | 'recent';
+type SortMode = 'newest' | 'name';
 
 const VIEW_PREFERENCE_KEY = 'tesla-view-mode';
+const SORT_PREFERENCE_KEY = 'tesla-sound-sort';
 
 export function SoundBrowser({
   sounds,
@@ -49,6 +51,10 @@ export function SoundBrowser({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(false);
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
+  const [sortMode, setSortMode] = useState<SortMode>(() => {
+    const saved = localStorage.getItem(SORT_PREFERENCE_KEY);
+    return saved === 'name' || saved === 'newest' ? saved : 'newest';
+  });
   const [viewMode, setViewMode] = useState<CardVariant>(() => {
     const saved = localStorage.getItem(VIEW_PREFERENCE_KEY);
     return (saved === 'list' || saved === 'grid') ? saved : 'grid';
@@ -59,21 +65,34 @@ export function SoundBrowser({
     localStorage.setItem(VIEW_PREFERENCE_KEY, viewMode);
   }, [viewMode]);
 
+  useEffect(() => {
+    localStorage.setItem(SORT_PREFERENCE_KEY, sortMode);
+  }, [sortMode]);
+
   const filteredSounds = useFilteredSounds(sounds, searchQuery, selectedCategory);
   
-  // Apply filter mode
+  // Apply filter mode + sort (except "recent", which keeps play order)
   const displayedSounds = useMemo(() => {
+    let list: ProcessedSound[];
     if (filterMode === 'favorites') {
-      return filteredSounds.filter(s => favorites.includes(s.id));
-    }
-    if (filterMode === 'recent') {
-      const recentSounds = recentlyPlayed
+      list = filteredSounds.filter(s => favorites.includes(s.id));
+    } else if (filterMode === 'recent') {
+      return recentlyPlayed
         .map(id => filteredSounds.find(s => s.id === id))
         .filter((s): s is ProcessedSound => s !== undefined);
-      return recentSounds;
+    } else {
+      list = filteredSounds;
     }
-    return filteredSounds;
-  }, [filteredSounds, filterMode, favorites, recentlyPlayed]);
+
+    return [...list].sort((a, b) => {
+      if (sortMode === 'newest') {
+        const aDate = a.addedAt || '';
+        const bDate = b.addedAt || '';
+        if (aDate !== bDate) return bDate.localeCompare(aDate);
+      }
+      return a.displayName.localeCompare(b.displayName);
+    });
+  }, [filteredSounds, filterMode, favorites, recentlyPlayed, sortMode]);
 
   return (
     <div className="space-y-4">
@@ -148,6 +167,35 @@ export function SoundBrowser({
           </div>
           
           <div className="flex items-center gap-3">
+            {filterMode !== 'recent' && (
+              <div className="flex rounded-lg bg-neutral-900 p-1">
+                <button
+                  onClick={() => setSortMode('newest')}
+                  className={`
+                    px-2.5 py-1 rounded-md text-sm font-medium transition-all
+                    ${sortMode === 'newest'
+                      ? 'bg-neutral-800 text-white'
+                      : 'text-neutral-400 hover:text-white'
+                    }
+                  `}
+                >
+                  Newest
+                </button>
+                <button
+                  onClick={() => setSortMode('name')}
+                  className={`
+                    px-2.5 py-1 rounded-md text-sm font-medium transition-all
+                    ${sortMode === 'name'
+                      ? 'bg-neutral-800 text-white'
+                      : 'text-neutral-400 hover:text-white'
+                    }
+                  `}
+                >
+                  A–Z
+                </button>
+              </div>
+            )}
+
             {/* View toggle */}
             <div className="flex rounded-lg bg-neutral-900 p-1">
               <button
