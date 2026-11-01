@@ -4,22 +4,25 @@ Informal maintainer log for [Tesla USB Loader](https://teslausbloader.pages.dev)
 
 ---
 
-## Status (Late June 2026)
+## Status (Nov 2026)
 
 **Production site is working end-to-end.** Verified on iPhone at [teslausbloader.pages.dev](https://teslausbloader.pages.dev):
 
-- **Sounds** — browse, preview, download `LockChime.wav` / `ASSChime.wav`
+- **Sounds** — browse, preview, download `LockChime.wav` / `ASSChime.wav` (~299 synced + custom)
 - **Wraps** — browse by model, preview, download PNGs
 - **USB load** — downloaded files copied to a Tesla USB stick and used in-car successfully
 
-The site continues to work great after recent updates.
-
 Dual-end USB stick (USB-C + USB-A) works fine for loading files from a phone or computer.
 
-### Recent changes (June 2026)
-- Centralized all icon components (Play, Pause, Heart, Loading, etc.) into `web/src/lib/icons.tsx`. This removed ~440 lines of duplicated inline SVGs from across the React components.
-- Updated `.gitignore` for explicit build artifact exclusion (`web/dist/`).
-- Local workspace tidied (removed generated `web/dist/` and legacy ignored directories).
+### Sound sync incident (Nov 2026)
+
+Not a Tesla App redesigned lock-sound download markup (`data-file="/assets/customizations/lock-sounds/wav/..."` instead of `href="/assets/audio/..."`). Our scraper returned **0** sounds, so live `/api/sounds` collapsed to only custom WAVs. Separately, GitHub set the scheduled sync workflow to `disabled_inactivity` after ~60 days without default-branch activity.
+
+**Fixed by:** updating scrape patterns, generating `web/public/sounds-manifest.json` at build time as the catalog source of truth, downloading **69** newly available WAVs, and re-enabling the workflow.
+
+### Earlier changes (June 2026)
+- Centralized icon components into `web/src/lib/icons.tsx`.
+- Updated `.gitignore` for `web/dist/` exclusion.
 
 ---
 
@@ -72,7 +75,7 @@ No manual manifest editing needed for either sounds or wraps.
 
 - **Host:** Cloudflare Pages (`rvwrh29585-eng/teslausbloader`)
 - **Trigger:** push to `main`
-- **Build:** `cd web && npm install && npm run build` (prebuild runs manifest scripts)
+- **Build:** `cd web && npm install && npm run build` (prebuild runs sounds/custom/wraps manifest scripts)
 - **Functions:** `functions/api/` (sounds, audio, wrap, stats)
 
 We test in **production**, not local dev — Vite alone does not serve `/api/*`. Use `npm run dev:cf` in `web/` only if local API debugging is needed.
@@ -82,9 +85,11 @@ We test in **production**, not local dev — Vite alone does not serve `/api/*`.
 ## Lessons learned
 
 - **Wrap API routing:** Cloudflare `[[path]]` catch-all passes `params.path` as a **string array**, not a string. Use `functions/api/wrap/[model]/[file].ts` instead.
+- **Sound catalog source of truth:** Prefer build-time `sounds-manifest.json` (+ `custom-sounds.json`) over live HTML scrape. Scrape is enrichment only — NATA redesigns will break parsers.
+- **GitHub scheduled workflows:** Go inactive after ~60 days without default-branch activity (`disabled_inactivity`). A push or `gh workflow enable` wakes them up.
 - **Cache:** `/api/sounds` uses `no-store` so new custom sounds show up without hard refresh.
 - **PNG for wraps:** Store PNG in repo even though the API accepts JPG — keeps UI clean and matches Tesla requirements.
-- **Shared icon library:** Centralizing repeated inline SVGs (and other icons) into a single `lib/icons.tsx` dramatically reduces duplication and makes the component code easier to maintain.
+- **Shared icon library:** Centralizing repeated inline SVGs into `lib/icons.tsx` reduces duplication.
 
 ---
 

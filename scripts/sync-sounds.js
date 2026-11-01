@@ -56,24 +56,34 @@ function fetch(url) {
 // Parse HTML to extract sound URLs
 function extractSoundUrls(html) {
   const sounds = [];
-  
-  // Match download links: href="/assets/audio/something.wav"
-  const regex = /href="(\/assets\/audio\/[^"]+\.wav)"/gi;
-  let match;
-  
-  while ((match = regex.exec(html)) !== null) {
-    const path = match[1];
-    const filename = path.split('/').pop();
-    
-    if (!sounds.some(s => s.filename === filename)) {
+  const seen = new Set();
+
+  // Current Not a Tesla App markup uses data-file on download buttons.
+  // Also accept legacy href="/assets/audio/..." links if they reappear.
+  const patterns = [
+    /data-file="(\/assets\/customizations\/lock-sounds\/wav\/[^"]+\.wav)"/gi,
+    /href="(\/assets\/customizations\/lock-sounds\/wav\/[^"]+\.wav)"/gi,
+    /href="(\/assets\/audio\/[^"]+\.wav)"/gi,
+  ];
+
+  for (const regex of patterns) {
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      const filePath = match[1];
+      const encodedName = filePath.split('/').pop() || '';
+      const filename = decodeURIComponent(encodedName);
+
+      if (!filename || seen.has(filename)) continue;
+      seen.add(filename);
+
       sounds.push({
-        path: path,
-        filename: filename,
-        url: `${BASE_URL}${path}`
+        path: filePath,
+        filename,
+        url: `${BASE_URL}${filePath}`,
       });
     }
   }
-  
+
   return sounds;
 }
 

@@ -42,15 +42,17 @@ export const onRequestGet: PagesFunction = async (context) => {
     }
   }
   
-  // Fallback: Try notateslaapp.com for sounds not in our repo
-  const baseName = wavFilename.replace(/\.wav$/i, '');
+  // Fallback: Try notateslaapp.com for sounds not yet in our repo
+  const encodedName = encodeURIComponent(wavFilename);
   const possiblePaths = [
-    `/assets/audio/cartoons/${baseName}.wav`,
-    `/assets/audio/video-games/${baseName}.wav`,
-    `/assets/audio/shows-movies/${baseName}.wav`,
-    `/assets/audio/retro/${baseName}.wav`,
-    `/assets/audio/others/${baseName}.wav`,
-    `/assets/audio/${baseName}.wav`,
+    `/assets/customizations/lock-sounds/wav/${encodedName}`,
+    // Legacy paths (pre-2026 site redesign)
+    `/assets/audio/cartoons/${encodedName}`,
+    `/assets/audio/video-games/${encodedName}`,
+    `/assets/audio/shows-movies/${encodedName}`,
+    `/assets/audio/retro/${encodedName}`,
+    `/assets/audio/others/${encodedName}`,
+    `/assets/audio/${encodedName}`,
   ];
   
   for (const path of possiblePaths) {
